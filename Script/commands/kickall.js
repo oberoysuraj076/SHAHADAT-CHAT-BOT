@@ -3,7 +3,7 @@ module.exports.config = {
     version: "1.0.0",
     hasPermssion: 2,
     credits: "SHAHADAT SAHU",
-    description: "Group er shob member remove kore.",
+    description: "Group के सभी members को remove करता है।",
     commandCategory: "box",
     usages: "",
     cooldowns: 5
@@ -22,7 +22,7 @@ module.exports.run = async function ({ api, event, getText, args }) {
     return api.getThreadInfo(event.threadID, async (err, info) => {
         if (err) {
             return api.sendMessage(
-                "⚠️ Group information check korte giye error hoyeche.",
+                "⚠️ Group information check करते समय error हो गई।",
                 event.threadID,
                 event.messageID
             );
@@ -30,7 +30,7 @@ module.exports.run = async function ({ api, event, getText, args }) {
 
         if (!info.adminIDs.some(item => item.id == botID)) {
             return api.sendMessage(
-                "⚠️ Bot-ke age group admin korte hobe.\nTarpor abar try korun.",
+                "⚠️ पहले Bot को group admin बनाना होगा।\nफिर दोबारा try करें।",
                 event.threadID,
                 event.messageID
             );
@@ -38,7 +38,7 @@ module.exports.run = async function ({ api, event, getText, args }) {
 
         if (!info.adminIDs.some(item => item.id == event.senderID)) {
             return api.sendMessage(
-                "⚠️ Shudhu group admin-ra ei command use korte parbe.",
+                "⚠️ सिर्फ group admin ही ये command use कर सकते हैं।",
                 event.threadID,
                 event.messageID
             );
@@ -49,7 +49,7 @@ module.exports.run = async function ({ api, event, getText, args }) {
         }, 300000);
 
         return api.sendMessage(
-            "» Shob member-ke group theke remove kora shuru hoyeche.\nBye everyone 👋",
+            "» सभी members को group से remove करना शुरू हो गया।\nBye everyone 👋",
             event.threadID,
             async (error, info) => {
                 for (let id in listUserID) {
