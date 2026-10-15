@@ -2,7 +2,7 @@ const fs = require("fs-extra");
 const request = require("request");
 
 module.exports.config = {
- name: "boy pp",
+ name: "boy dp",
  version: "1.0.0",
  hasPermssion: 0,
  credits: "SHAHADAT SAHU",
