@@ -16,7 +16,7 @@ module.exports.run = async ({ api, event, Threads }) => {
 
     if (action !== "on" && action !== "off") {
         return api.sendMessage(
-            "⚠️ ব্যবহার করুন:antiout on / antiout off",
+            "⚠️ Usage: antiout on / antiout off",
             event.threadID
         );
     }
@@ -34,8 +34,8 @@ module.exports.run = async ({ api, event, Threads }) => {
 
     return api.sendMessage(
         data.antiout
-            ? "✅ Antiout সফলভাবে ON করা হয়েছে।"
-            : "📛 Antiout সফলভাবে OFF করা হয়েছে।",
+            ? "✅ Antiout has been successfully turned ON."
+            : "📛 Antiout has been successfully turned OFF.",
         event.threadID
     );
 };
