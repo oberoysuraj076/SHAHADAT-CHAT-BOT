@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "hug",
-  version: "2.0.0",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "SHAHADAT SAHU",
   description: "Generate hug frame using Avatar Canvas API",
@@ -26,34 +26,53 @@ module.exports.run = async function ({ event, api }) {
   }
 
   if (!targetID) {
-    return api.sendMessage("Please reply or mention someone......", threadID, messageID);
+    return api.sendMessage(
+      "⚠️ कृपया किसी को reply या mention करें......",
+      threadID,
+      messageID
+    );
   }
 
+  let imgPath;
+
   try {
+    // 📡 Fetch API list
     const apiList = await axios.get(
-      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json"
+      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json",
+      { timeout: 15000 }
     );
 
-    const AVATAR_CANVAS_API = apiList.data.AvatarCanvas;
+    const AVATAR_CANVAS_API = apiList?.data?.AvatarCanvas;
+    if (!AVATAR_CANVAS_API) throw new Error("AvatarCanvas API not found");
 
+    // 🖼️ Request hug image
     const res = await axios.post(
       `${AVATAR_CANVAS_API}/api`,
       { cmd: "hug", senderID, targetID },
       { responseType: "arraybuffer", timeout: 30000 }
     );
 
-    const imgPath = path.join(__dirname, "cache", `hug_${senderID}_${targetID}.png`);
-    fs.writeFileSync(imgPath, res.data);
+    // 💾 Ensure cache dir exists
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
 
+    imgPath = path.join(
+      cacheDir,
+      `hug_${senderID}_${targetID}_${Date.now()}.png`
+    );
+
+    fs.writeFileSync(imgPath, Buffer.from(res.data));
+
+    // 💌 Captions (Hindi)
     const captions = [
-      "❝ যদি কখনো অনুভূতি হয়, তাহলে তোমার প্রতি আমার অনুভূতি পৃথিবীর সেরা অনুভূতি!🌻",
-      "❝ তুমি আমার জীবনের সেরা অধ্যায়, যেই অধ্যায় বারবার পড়তে ইচ্ছে করে!💝",
-      "❝ তোমার ভালোবাসার মূল্য আমি কিভাবে দেবো তা জানি না— শুধু জানি তোমাকে হারাতে চাই না!❤️",
-      "❝ আমি প্রেমে পড়ার আগে তোমার মায়ায় জড়িয়ে গেছি, যে মায়া নেশার মতো!💘",
-      "❝ তুমি আমার ভালোবাসা, আমার শান্তি, আমার সবকিছু!💞",
-      "❝ তোমাকে ভালোবাসা আমার জীবনের সবচেয়ে সুন্দর অনুভূতি!❤️‍🔥",
-      "❝ তুমি আমার জীবনের সেই গল্প, যা প্রতিবার পড়লে নতুন প্রেম জাগে!💚",
-      "❝ তোমাকে অনেক অনেক ভালোবাসি আমার রাজকন্যা।❤️‍🩹",
+      "❝ अगर कभी एहसास हो, तो तेरे लिए मेरा एहसास दुनिया का सबसे बेहतरीन एहसास है!🌻",
+      "❝ तू मेरी ज़िंदगी का सबसे अच्छा चैप्टर है, जिसे बार-बार पढ़ने का मन करता है!💝",
+      "❝ तेरे प्यार की कीमत कैसे चुकाऊँ, ये नहीं जानता — बस इतना जानता हूँ कि तुझे खोना नहीं चाहता!❤️",
+      "❝ प्यार में पड़ने से पहले तेरी माया में उलझ गया, जो नशे जैसी है!💘",
+      "❝ तू मेरा प्यार, मेरी शांति, मेरा सब कुछ है!💞",
+      "❝ तुझसे प्यार करना मेरी ज़िंदगी का सबसे खूबसूरत एहसास है!❤️‍🔥",
+      "❝ तू मेरी ज़िंदगी की वो कहानी है, जो हर बार पढ़ने पर नया प्यार जगाती है!💚",
+      "❝ तुझसे बहुत बहुत प्यार करता हूँ मेरी राजकुमारी।❤️‍🩹",
       "❝ You complete me. A warm hug just for you!🌺"
     ];
 
@@ -62,11 +81,25 @@ module.exports.run = async function ({ event, api }) {
     return api.sendMessage(
       { body: caption, attachment: fs.createReadStream(imgPath) },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        // 🧹 Cleanup after send
+        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+      },
       messageID
     );
 
-  } catch {
-    return api.sendMessage("API Error Call Boss SAHU", threadID, messageID);
+  } catch (e) {
+    // 🧹 Cleanup on error
+    if (imgPath && fs.existsSync(imgPath)) {
+      try { fs.unlinkSync(imgPath); } catch {}
+    }
+
+    console.error("[HUG CMD ERROR]", e.message || e);
+
+    return api.sendMessage(
+      "❌ API Error | Call Boss SAHU",
+      threadID,
+      messageID
+    );
   }
 };
