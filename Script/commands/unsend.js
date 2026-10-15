@@ -13,15 +13,18 @@ module.exports.config = {
   cooldowns: 0
 };
 
+// 💬 Hindi messages
 const lang = {
-  returnCant: "কি unsent করমু? reply করে বলো সুনা 🫰",
-  missingReply: "কি unsent করমু? reply করে বলো সুনা 🫰"
+  returnCant: "क्या unsend करूँ? reply करके बोलो  🫰",
+  missingReply: "क्या unsend करूँ? reply करके बोलो 🫰"
 };
 
 module.exports.run = async function ({ api, event }) {
+  // ⏭️ Reply zaroori hai
   if (event.type !== "message_reply")
     return api.sendMessage(lang.missingReply, event.threadID, event.messageID);
 
+  // 🤖 Sirf bot ke apne message delete kar sakta hai
   if (event.messageReply.senderID !== api.getCurrentUserID())
     return api.sendMessage(lang.returnCant, event.threadID, event.messageID);
 
@@ -34,6 +37,7 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     const triggers = ["uns", "unsend", "del", "delete", "remove", "u"];
 
+    // 🔧 Prefix detect karo
     let prefixes = [""];
     try {
       const prefixFile = path.join(__dirname, "prefix.js");
@@ -49,15 +53,17 @@ module.exports.handleEvent = async function ({ api, event }) {
     );
 
     if (isTriggered) {
+      // ⏭️ Reply zaroori hai
       if (event.type !== "message_reply")
         return api.sendMessage(lang.missingReply, event.threadID, event.messageID);
 
+      // 🤖 Sirf bot ka message
       if (event.messageReply.senderID !== api.getCurrentUserID())
         return api.sendMessage(lang.returnCant, event.threadID, event.messageID);
 
       return api.unsendMessage(event.messageReply.messageID);
     }
   } catch (err) {
-    console.error("tor kotha suntam na 🤣", err);
+    console.error("तेरी बात सुन नहीं पाया 🤣", err);
   }
 };
