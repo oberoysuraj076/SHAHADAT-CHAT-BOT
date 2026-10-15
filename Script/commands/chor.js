@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "chor",
-  version: "2.0.0",
+  version: "1.0.0",
   hasPermssion: 0,
   credits: "SHAHADAT SAHU",
   description: "Scooby-doo meme using Avatar Canvas API",
@@ -26,7 +26,11 @@ module.exports.run = async function ({ event, api }) {
   }
 
   if (!targetID) {
-    return api.sendMessage("Please reply or mention someone.", threadID, messageID);
+    return api.sendMessage(
+      "किसी को reply करें या mention करें......",
+      threadID,
+      messageID
+    );
   }
 
   try {
@@ -40,8 +44,6 @@ module.exports.run = async function ({ event, api }) {
       `${AVATAR_CANVAS_API}/api`,
       {
         cmd: "chor",
-
-        
         senderID: targetID,
         targetID: senderID
       },
@@ -51,20 +53,39 @@ module.exports.run = async function ({ event, api }) {
       }
     );
 
-    const imgPath = path.join(__dirname, "cache", `chor_${senderID}_${targetID}.png`);
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
+    const imgPath = path.join(
+      cacheDir,
+      `chor_${senderID}_${targetID}.png`
+    );
+
     fs.writeFileSync(imgPath, res.data);
 
     return api.sendMessage(
       {
-        body: "~বলদ মেয়েদের চিপায় ধরা খাইছে😹🤣",
+        body:
+          "~ लड़कियों की झुंड में पकड़ा गया 😹🤣\n" +
+          "अब तो पूरे ग्रुप को पता चल गया, तेरी तो निकल पड़ी 😂🕵️‍♂️",
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        try {
+          fs.unlinkSync(imgPath);
+        } catch (_) {}
+      },
       messageID
     );
 
   } catch (error) {
-    return api.sendMessage("API Error Call Boss SAHU.", threadID, messageID);
+    return api.sendMessage(
+      "API Error Call Boss SAHU.",
+      threadID,
+      messageID
+    );
   }
 };
