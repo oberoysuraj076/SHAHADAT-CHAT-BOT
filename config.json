@@ -1,5 +1,5 @@
 {
-  "Author": "SHAHADAT SAHU",
+  "Author": "RISHIKESH",
   "version": "3.0.0",
   "language": "en",
   "adminOnly": false,
@@ -13,7 +13,7 @@
   "EMAIL": "Facebook number/ID",
   "PASSWORD": "Facebook password",
   "OTPKEY": "Facebook 2FA Secret Key",
-  "BOTNAME": "⸻̅͟ˣ͠𓆩𝐘꯭꘍꯭֟፝͡᪂꘍꯭ 𝐀꯭𖾝꯭꯭𝐌꯭꯭𝐔꯭𓆪꯭ˣ͢ ◄⸻̅͟ˣ͠𓆩𝐁꯭꯭𝐎꯭꯭𝐓꯭𓆪꯭ˣ͢",
+  "BOTNAME": "⸻̅͟ˣ͠𓆩𝐘꯭꘍꯭֟፝͡᪂꘍꯭ 𝐀꯭𖾝꯭꯭𝐌꯭꯭𝐔꯭𓆪꯭ˣ͢ˣ͠𓆩𝐁꯭꯭𝐎꯭꯭𝐓꯭𓆪꯭ˣ͢",
   "PREFIX": ".",
   "usePrefix": false,
   "reactUnsend": [
@@ -23,8 +23,6 @@
     "😠"
   ],
   "ADMINBOT": [
-    "61594111949950",
-    "61594111949950",
     "61594111949950"
   ],
   "DEVELOPER": [
