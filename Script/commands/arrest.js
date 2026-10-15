@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports.config = {
   name: "arrest",
-  version: "1.0.0",
+  version: "1.0.1",
   hasPermssion: 0,
   credits: "SHAHADAT SAHU",
   description: "Generate scooby-doo meme using sender and target Facebook UID via Avatar Canvas API",
@@ -32,7 +32,7 @@ module.exports.run = async function ({ event, api, Users }) {
 
   if (!targetID) {
     return api.sendMessage(
-      "Please reply or mention someone......",
+      "किसी को reply करें या mention करें......",
       threadID,
       messageID
     );
@@ -58,9 +58,14 @@ module.exports.run = async function ({ event, api, Users }) {
       }
     );
 
+    // ---------- Cache Folder Auto-Create ----------
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
     const imgPath = path.join(
-      __dirname,
-      "cache",
+      cacheDir,
       `chor_${senderID}_${targetID}.png`
     );
 
@@ -73,17 +78,22 @@ module.exports.run = async function ({ event, api, Users }) {
 
     return api.sendMessage(
       {
-        body: `হালা মুরগী চোর তোরে আজকে হাতে নাতে ধরছি পালাবি কই 😹🕵️‍♂️\n=> ${tag}`,
+        body: `हाला मुर्गी चोर, तुझे आज हाथों-हाथ पकड़ रहा हूँ, भागेगा कहाँ 😹🕵️‍♂️\n=> ${tag}`,
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        // ---------- Safe Delete ----------
+        try {
+          fs.unlinkSync(imgPath);
+        } catch (_) {}
+      },
       messageID
     );
 
   } catch (e) {
     return api.sendMessage(
-      "API Error Call Boss SAHU",
+      "API Error, Boss SAHU को call करें",
       threadID,
       messageID
     );
