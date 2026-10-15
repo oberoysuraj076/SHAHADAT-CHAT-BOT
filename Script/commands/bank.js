@@ -14,7 +14,7 @@ module.exports.config = {
 };
 
 const BANK_PATH = path.join(__dirname, "cache", "bankData.json");
-const TIME_ZONE = "Asia/Dhaka";
+const TIME_ZONE = "Asia/Kolkata";
 const DAILY_BONUS = 1000;
 const INTEREST_RATE = 0.10;
 const MAX_LOAN = 1000000;
