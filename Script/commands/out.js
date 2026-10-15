@@ -23,19 +23,22 @@ module.exports.run = async function({
             ? args.join(" ")
             : event.threadID;
 
-    const message = `👋 Goodbye Everyone! 💚
+    // 💬 Hindi goodbye message
+    const message = `👋 अलविदा सबको! 💚
 
-💖 Shobai ke onek dhonnobad amar sathe thakar jonno.
-🌸 Ei group-er sathe thakte pere onek bhalo legeche.
-🥰 Shobai bhalo thakben, nijeder care korben!
-💫 Abar dekha hobe! 🌺`;
+💖 सबका बहुत-बहुत शुक्रिया मेरे साथ रहने के लिए।
+🌸 इस group के साथ रहकर बहुत अच्छा लगा।
+🥰 सब अच्छे रहेंगे, अपना ख्याल रखेंगे!
+💫 फिर मिलेंगे! 🌺`;
 
     try {
+        // 📤 Goodbye message bhejo
         await api.sendMessage(
             message,
             threadID
         );
 
+        // 🚪 1.5 second baad group chhodo
         setTimeout(() => {
             api.removeUserFromGroup(
                 botID,
@@ -47,7 +50,7 @@ module.exports.run = async function({
         console.error("[OUT]", error);
 
         return api.sendMessage(
-            "⚠️ Failed to leave the group.",
+            "⚠️ Group छोड़ने में fail हो गया।",
             event.threadID,
             event.messageID
         );
