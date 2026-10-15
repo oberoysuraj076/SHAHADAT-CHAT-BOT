@@ -15,7 +15,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
   try {
     if (!isGroup) {
       return api.sendMessage(
-        "আরে বোকা! তুমি তো অলরেডি আমার ইনবক্সেই আছো! 😹",
+        "अरे पगले! तू तो पहले से ही मेरे इनबॉक्स में है! 😹",
         threadID,
         messageID
       );
@@ -26,16 +26,16 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
     let inboxText = "";
     if (customMessage) {
-      inboxText = `আসসালামু আলাইকুম ${userName}!\n\nতুমি গ্রুপ থেকে আমাকে এই মেসেজটি পাঠাতে বলেছিলে:\n📩 "${customMessage}"\n\nযেকোনো প্রয়োজনে আমাকে ইনবক্সে সরাসরি মেসেজ দিতে পারো! 🥰`;
+      inboxText = `अस्सलामु अलैकुम ${userName}!\n\nतूने ग्रुप से मुझे ये मैसेज भेजने को कहा था:\n📩 "${customMessage}"\n\nकिसी भी ज़रूरत के लिए मुझे सीधे इनबॉक्स में मैसेज कर सकता है! 🥰`;
     } else {
-      inboxText = `আসসালামু আলাইকুম ${userName}! ❤️\n\nতুমি গ্রুপ থেকে আমাকে ডেকেছো, তাই তোমার ইনবক্সে চলে আসলাম। 🙈\n\nবলো জানু, তোমার জন্য কি করতে পারি? যেকোনো কথা বা আড্ডা দিতে চাইলে আমাকে সরাসরি মেসেজ দাও! 🤖✨`;
+      inboxText = `अस्सलामु अलैकुम ${userName}! ❤️\n\nतूने ग्रुप से मुझे बुलाया, तो तेरे इनबॉक्स में चला आया। 🙈\n\nबोल जानू, तेरे लिए क्या करूँ? कोई भी बात या मस्ती करनी हो तो मुझे सीधे मैसेज कर! 🤖✨`;
     }
 
     api.sendMessage(inboxText, senderID, (err) => {
       if (err) {
         return api.sendMessage(
           {
-            body: `⚠️ দুঃখিত @${userName}, তোমার ইনবক্সে মেসেজ পাঠানো সম্ভব হয়নি!\n\nকারণ: তোমার আইডির Message Request বন্ধ থাকতে পারে অথবা আমাকে মেসেজ দেওয়ার অপশন লক করা। দয়া করে আগে আমার ইনবক্সে একটি 'Hi' পাঠাও।`,
+            body: `⚠️ माफ़ करना @${userName}, तेरे इनबॉक्स में मैसेज नहीं भेज पाया!\n\nकारण: तेरी ID का Message Request बंद हो सकता है या मुझे मैसेज भेजने का ऑप्शन लॉक है। कृपया पहले मेरे इनबॉक्स में एक 'Hi' भेज दे।`,
             mentions: [{ tag: `@${userName}`, id: senderID }]
           },
           threadID,
@@ -45,7 +45,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 
       return api.sendMessage(
         {
-          body: `✅ এই যে @${userName}, তোমার ইনবক্সে একটি মেসেজ পাঠানো হয়েছে! 💌\n\n👉 ইনবক্সে মেসেজ না পেলে মেসেঞ্জারের 'Message Requests' বা 'Spam' ফোল্ডার চেক করো।`,
+          body: `✅ ये ले @${userName}, तेरे इनबॉक्स में एक मैसेज भेज दिया है! 💌\n\n👉 इनबॉक्स में मैसेज न मिले तो मैसेंजर के 'Message Requests' या 'Spam' फोल्डर में चेक कर ले।`,
           mentions: [{ tag: `@${userName}`, id: senderID }]
         },
         threadID,
@@ -55,7 +55,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
   } catch (error) {
     console.error("Inbox Command Error:", error);
     return api.sendMessage(
-      `❌ একটি সমস্যা হয়েছে!\n\n${error.message}`,
+      `❌ कुछ गड़बड़ हो गई!\n\n${error.message}`,
       threadID,
       messageID
     );
