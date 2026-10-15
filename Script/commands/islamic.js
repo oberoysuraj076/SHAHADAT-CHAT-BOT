@@ -3,14 +3,14 @@ const fs = require("fs-extra");
 const path = require("path");
 
 module.exports.config = {
-    name: "islamick",
-    aliases: ["islam", "islamicvideo"],
-    version: "2.0.0",
+    name: "hindu",
+    aliases: ["hinduvideo", "bhakti", "mandir"],
+    version: "1.0.0",
     hasPermssion: 0,
     credits: "SHAHADAT SAHU",
-    description: "Send a random Islamic video",
+    description: "Send a random Hindu devotional video",
     commandCategory: "Random video",
-    usages: "islamick",
+    usages: "hindu",
     cooldowns: 5,
     usePrefix: true,
     dependencies: {
@@ -19,46 +19,37 @@ module.exports.config = {
     }
 };
 
+// 📌 Apni Hindu / Bhakti videos ke Imgur .mp4 links yahan daalein
 const videos = [
-    "https://i.imgur.com/FbnZI40.mp4",
-    "https://i.imgur.com/8k6OOZg.mp4",
-    "https://i.imgur.com/lgQghHX.mp4",
-    "https://i.imgur.com/D7HZFSg.mp4",
-    "https://i.imgur.com/vUe9Zlv.mp4",
-    "https://i.imgur.com/oxFuJYw.mp4",
-    "https://i.imgur.com/OKKlDBN.mp4",
-    "https://i.imgur.com/6wWebFc.mp4",
-    "https://i.imgur.com/K2LTmaA.mp4",
-    "https://i.imgur.com/i9vKvTd.mp4",
-    "https://i.imgur.com/Y6uBzxx.mp4",
-    "https://i.imgur.com/ULtFVPQ.mp4",
-    "https://i.imgur.com/wX8WJh3.mp4",
-    "https://i.imgur.com/6A42EIx.mp4",
-    "https://i.imgur.com/ozRevxt.mp4",
-    "https://i.imgur.com/Gd49ZSo.mp4",
-    "https://i.imgur.com/xu6lBXk.mp4",
-    "https://i.imgur.com/sDNohv4.mp4",
-    "https://i.imgur.com/JBu2Ie3.mp4",
-    "https://i.imgur.com/UaY42rq.mp4",
-    "https://i.imgur.com/NFxf731.mp4",
-    "https://i.imgur.com/vv1HsMC.mp4",
-    "https://i.imgur.com/Y8MPzLv.mp4",
-    "https://i.imgur.com/9M1v1qK.mp4",
-    "https://i.imgur.com/EgUy7v0.mp4",
-    "https://i.imgur.com/IjDqg2G.mp4",
-    "https://i.imgur.com/51NYqmO.mp4",
-    "https://i.imgur.com/XjfJHh9.mp4",
-    "https://i.imgur.com/XHrkPt4.mp4",
-    "https://i.imgur.com/mqEYRdy.mp4",
-    "https://i.imgur.com/NaVsFmQ.mp4",
-    "https://i.imgur.com/31XSmVj.mp4",
-    "https://i.imgur.com/PPamCPI.mp4",
-    "https://i.imgur.com/i6Iy7iN.mp4"
+    "https://i.imgur.com/XXXXXXXX1.mp4",
+    "https://i.imgur.com/XXXXXXXX2.mp4",
+    "https://i.imgur.com/XXXXXXXX3.mp4",
+    "https://i.imgur.com/XXXXXXXX4.mp4",
+    "https://i.imgur.com/XXXXXXXX5.mp4",
+    "https://i.imgur.com/XXXXXXXX6.mp4",
+    "https://i.imgur.com/XXXXXXXX7.mp4",
+    "https://i.imgur.com/XXXXXXXX8.mp4",
+    "https://i.imgur.com/XXXXXXXX9.mp4",
+    "https://i.imgur.com/XXXXXXXX10.mp4"
+];
+
+// 🕉️ Hindu greetings / captions (Hindi)
+const captions = [
+    "🕉️ ॐ नमः शिवाय!\n\nजय श्री राम 🚩\nभगवान हम सबका कल्याण करें। 🙏",
+    "🚩 जय श्री कृष्ण!\n\nराधे राधे 🌸\nहर हर महादेव 🕉️",
+    "🕉️ हर हर महादेव!\n\nबोलो जय श्री राम 🚩\nसंकट हरें भगवान। 🙏",
+    "🌸 जय माता दी!\n\nजय श्री गणेश 🐘\nहर कार्य में सफलता मिले। 🙏",
+    "🚩 सियावर रामचंद्र की जय!\n\nप्रभु श्री राम हम सब पर कृपा करें। 🙏",
+    "🕉️ ॐ नमो भगवते वासुदेवाय!\n\nश्री कृष्ण की कृपा सदा बनी रहे। 🌸",
+    "🙏 जय बजरंगबली!\n\nसंकट कटे, मन शांत रहे। 🚩",
+    "🌸 दुर्गा माता की जय!\n\nशेरावाली माँ हमें शक्ति दें। 🙏",
+    "🚩 जय लक्ष्मी माता!\n\nघर में सुख-समृद्धि बनी रहे। 🌸",
+    "🕉️ वक्रतुण्ड महाकाय!\n\nगणपति बप्पा मोरया 🐘"
 ];
 
 module.exports.run = async function ({ api, event }) {
     const fileName =
-        `islamic_${Date.now()}_${Math.random()
+        `hindu_${Date.now()}_${Math.random()
             .toString(36)
             .slice(2)}.mp4`;
 
@@ -77,6 +68,15 @@ module.exports.run = async function ({ api, event }) {
                     Math.random() * videos.length
                 )
             ];
+
+        // ⚠️ Placeholder check
+        if (videoUrl.includes("XXXXXXXX")) {
+            return api.sendMessage(
+                "⚠️ Pehle `videos` array mein apne Imgur .mp4 links daalein!",
+                event.threadID,
+                event.messageID
+            );
+        }
 
         api.setMessageReaction(
             "⏳",
@@ -126,16 +126,17 @@ module.exports.run = async function ({ api, event }) {
             true
         );
 
+        // 🎲 Random caption pick
+        const caption =
+            captions[
+                Math.floor(
+                    Math.random() * captions.length
+                )
+            ];
+
         return api.sendMessage(
             {
-                body:
-                    "🌻 মানুষ হারাম ছাড়ে না, " +
-                    "অথচ সুখ শান্তি খুঁজে বেড়ায় আরাম।\n" +
-                    "মানুষ কেন বুঝতে চায় না,\n" +
-                    "সে যে খোদার গোলাম। 🥺\n\n" +
-                    "আল্লাহ আমাদের সবাইকে হারাম থেকে " +
-                    "দূরে থাকার তৌফিক দান করুন। 🤲❤️‍🩹",
-
+                body: caption,
                 attachment:
                     fs.createReadStream(filePath)
             },
@@ -152,7 +153,7 @@ module.exports.run = async function ({ api, event }) {
             .catch(() => {});
 
         console.error(
-            "[ISLAMICK ERROR]",
+            "[HINDU ERROR]",
             error?.response?.status ||
             error?.message ||
             error
@@ -166,8 +167,8 @@ module.exports.run = async function ({ api, event }) {
         );
 
         return api.sendMessage(
-            "❌ Islamic video পাঠানো যায়নি।\n\n" +
-            "⚠️ Video source অথবা download connection-এ সমস্যা হয়েছে।",
+            "❌ हिंदू भक्ति वीडियो भेजा नहीं जा सका।\n\n" +
+            "⚠️ वीडियो सोर्स या डाउनलोड कनेक्शन में समस्या हुई है।",
             event.threadID,
             event.messageID
         );
