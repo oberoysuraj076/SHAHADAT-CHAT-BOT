@@ -3,7 +3,7 @@ const request = require("request");
 
 module.exports.config = {
  name: "boy pp",
- version: "1.0.1",
+ version: "1.0.0",
  hasPermssion: 0,
  credits: "SHAHADAT SAHU",
  description: "Send a random Facebook boy profile picture",
