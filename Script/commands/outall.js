@@ -28,20 +28,23 @@ module.exports.run = async function ({ api, event }) {
         group.threadID != event.threadID
       ) {
         try {
+          // 💬 Hindi goodbye message
           await api.sendMessage(
-            `Goodbye everyone! 👋❤️
+            `अलविदा सबको! 👋❤️
 
-${botName} ei group theke ber hoye jacche.
-Shobai bhalo thakben. 🥺
+${botName} इस group से निकल रहा है।
+सब अच्छे रहेंगे। 🥺
 
-Thanks for using ${botName}. 🤖❤️`,
+${botName} use करने के लिए शुक्रिया। 🤖❤️`,
             group.threadID
           );
 
+          // ⏱️ 500ms delay
           await new Promise(resolve =>
             setTimeout(resolve, 500)
           );
 
+          // 🚪 Leave group
           await api.removeUserFromGroup(
             api.getCurrentUserID(),
             group.threadID
@@ -58,7 +61,7 @@ Thanks for using ${botName}. 🤖❤️`,
     }
 
     return api.sendMessage(
-      `✅ Successfully left ${count} groups.`,
+      `✅ ${count} groups से successfully निकल गया।`,
       event.threadID
     );
 
@@ -66,7 +69,7 @@ Thanks for using ${botName}. 🤖❤️`,
     console.error(error);
 
     return api.sendMessage(
-      "📛 Failed to leave groups.",
+      "📛 Groups से निकलने में fail हो गया।",
       event.threadID
     );
   }
