@@ -25,30 +25,39 @@ module.exports.run = async function ({ event, api }) {
   }
 
   if (!targetID) {
-    return api.sendMessage("Please reply or mention someone......", threadID, messageID);
+    return api.sendMessage(
+      "⚠️ कृपया किसी को reply या mention करें......",
+      threadID,
+      messageID
+    );
   }
 
+  // 💌 Captions (Hindi)
   const captions = [
-    "💖 ⎯͢⎯⃝🩷😽 তুমি আমার চোখেতে সরলতার উপমা ⎯͢⎯⃝🩷🐰🍒",
-    "💖 🥺❤️ প্রিয়.....! 😊\nকখনো কাঁদাও, কখনো হাসাও,\nআবার কখনো এমন ভালোবাসা দাও,\nযেন পৃথিবীর সব সুখ তোমার মাঝে খুঁজে পাই...! 💔❤️",
-    "বিচ্ছেদের পরেও যোগাযোগ রাখার নামই হচ্ছে মায়া ____💖 💗🌺",
-    "মানুষ ছেড়ে যায়, কিন্তু স্মৃতি নয়!💖",
-    "ইচ্ছে 'গুলো শব্দহীন...!! ভাবনা সে-তো প্রতি দিন..! 🌸💔",
-    "ভালোবাসা মানে কেবল প্রেম নয়, বরং যার হাসিতে সকাল শুরু হয় 💖",
-    "যে সম্পর্ক চোখে দেখা যায় না, মনে থাকে— সেটাই সত্যিকারের ভালোবাসা 💗",
-    "তুমি হয়তো দূরে আছো, কিন্তু অনুভূতির ঠিকানা এখনো তুমি!💞",
-    "চোখের ভাষা বোঝে যে, সেই প্রিয় ❤️",
-    "তুমি মিষ্টি অভ্যাস— যাকে ছাড়াও থাকা যায় না 💖"
+    "💖 ⎯͢⎯⃝🩷😽 तू मेरी आँखों में सादगी की मिसाल है ⎯͢⎯⃝🩷🐰🍒",
+    "💖 🥺❤️ प्रिय.....! 😊\nकभी रोता है, कभी हँसता है,\nकभी ऐसा प्यार देता है,\nजैसे दुनिया की सारी खुशियाँ तुझमें ढूँढ लूँ...! 💔❤️",
+    "जुदाई के बाद भी संपर्क बनाए रखने का नाम ही माया है ____💖 💗🌺",
+    "लोग चले जाते हैं, पर यादें नहीं!💖",
+    "इच्छाएँ शब्दहीन हैं...!! सोच तो रोज़ की है..! 🌸💔",
+    "प्यार सिर्फ इश्क नहीं, बल्कि वो है जिसकी हँसी से सुबह शुरू होती है 💖",
+    "जो रिश्ता आँखों से नहीं दिखता, दिल में रहता है— वही सच्चा प्यार है 💗",
+    "तू शायद दूर है, पर एहसास का पता आज भी तू ही है!💞",
+    "आँखों की भाषा जो समझे, वही प्रिय ❤️",
+    "तू मीठी आदत है— जिसे छोड़कर रहा भी नहीं जाता 💖"
   ];
 
   const caption = captions[Math.floor(Math.random() * captions.length)];
 
+  let imgPath;
+
   try {
     const apiList = await axios.get(
-      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json"
+      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json",
+      { timeout: 15000 }
     );
 
-    const AVATAR_CANVAS_API = apiList.data.AvatarCanvas;
+    const AVATAR_CANVAS_API = apiList?.data?.AvatarCanvas;
+    if (!AVATAR_CANVAS_API) throw new Error("AvatarCanvas API not found");
 
     const res = await axios.post(
       `${AVATAR_CANVAS_API}/api`,
@@ -60,7 +69,14 @@ module.exports.run = async function ({ event, api }) {
       { responseType: "arraybuffer", timeout: 20000 }
     );
 
-    const imgPath = path.join(__dirname, "cache", `love_${senderID}_${targetID}.png`);
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+    imgPath = path.join(
+      cacheDir,
+      `love_${senderID}_${targetID}_${Date.now()}.png`
+    );
+
     fs.writeFileSync(imgPath, Buffer.from(res.data));
 
     return api.sendMessage(
@@ -69,11 +85,23 @@ module.exports.run = async function ({ event, api }) {
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+      },
       messageID
     );
 
-  } catch {
-    return api.sendMessage("API Error Call Boss SAHU", threadID, messageID);
+  } catch (e) {
+    if (imgPath && fs.existsSync(imgPath)) {
+      try { fs.unlinkSync(imgPath); } catch {}
+    }
+
+    console.error("[LOVE CMD ERROR]", e.message || e);
+
+    return api.sendMessage(
+      "❌ API Error | Call Boss SAHU",
+      threadID,
+      messageID
+    );
   }
 };
