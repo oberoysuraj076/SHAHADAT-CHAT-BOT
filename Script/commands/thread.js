@@ -1,6 +1,6 @@
 module.exports.config = {
     name: "thread",
-	aliases: ["groupban"],
+    aliases: ["groupban"],
     version: "3.0.0",
     hasPermssion: 2,
     credits: "SHAHADAT SAHU",
@@ -22,33 +22,33 @@ module.exports.languages = {
             "6. /thread list\n" +
             "7. /thread info <threadID>",
 
-        invalidID: "❌ Valid Thread ID দিন।",
+        invalidID: "❌ सही Thread ID दें।",
 
         confirmBan:
             "⚠️ Thread Ban Confirmation\n\n" +
             "🆔 Thread ID: %1\n" +
             "📝 Reason: %2\n\n" +
-            "Confirm করতে reply করুন:\n" +
+            "Confirm करने के लिए reply करें:\n" +
             "confirm",
 
         confirmUnban:
             "⚠️ Thread Unban Confirmation\n\n" +
             "🆔 Thread ID: %1\n\n" +
-            "Confirm করতে reply করুন:\n" +
+            "Confirm करने के लिए reply करें:\n" +
             "confirm",
 
         confirmCommandBan:
             "⚠️ Command Ban Confirmation\n\n" +
             "🆔 Thread ID: %1\n" +
             "⚙️ Commands: %2\n\n" +
-            "Confirm করতে reply করুন:\n" +
+            "Confirm करने के लिए reply करें:\n" +
             "confirm",
 
         confirmCommandUnban:
             "⚠️ Command Unban Confirmation\n\n" +
             "🆔 Thread ID: %1\n" +
             "⚙️ Commands: %2\n\n" +
-            "Confirm করতে reply করুন:\n" +
+            "Confirm करने के लिए reply करें:\n" +
             "confirm"
     }
 };
@@ -98,7 +98,7 @@ module.exports.handleReply = async function ({
 
     if (reply !== "confirm") {
         return api.sendMessage(
-            "❌ Cancelled.\nConfirm korte `confirm` reply korun.",
+            "❌ Cancelled.\nConfirm करने के लिए `confirm` reply करें।",
             event.threadID,
             event.messageID
         );
@@ -140,7 +140,7 @@ module.exports.handleReply = async function ({
                 });
 
                 return api.sendMessage(
-                    `✅ Thread banned successfully.\n\n` +
+                    `✅ Thread सफलतापूर्वक ban कर दिया गया।\n\n` +
                     `🆔 Thread ID: ${targetID}\n` +
                     `📝 Reason: ${reason || "Not specified"}`,
                     event.threadID,
@@ -162,7 +162,7 @@ module.exports.handleReply = async function ({
                 global.data.threadBanned.delete(targetID);
 
                 return api.sendMessage(
-                    `✅ Thread unbanned successfully.\n\n` +
+                    `✅ Thread सफलतापूर्वक unban कर दिया गया।\n\n` +
                     `🆔 Thread ID: ${targetID}`,
                     event.threadID,
                     event.messageID
@@ -196,7 +196,7 @@ module.exports.handleReply = async function ({
                 );
 
                 return api.sendMessage(
-                    `✅ Command ban successfully.\n\n` +
+                    `✅ Command सफलतापूर्वक ban कर दिया गया।\n\n` +
                     `🆔 Thread ID: ${targetID}\n` +
                     `⚙️ Commands: ${commands.join(", ")}`,
                     event.threadID,
@@ -231,7 +231,7 @@ module.exports.handleReply = async function ({
                 }
 
                 return api.sendMessage(
-                    `✅ Command unban successfully.\n\n` +
+                    `✅ Command सफलतापूर्वक unban कर दिया गया।\n\n` +
                     `🆔 Thread ID: ${targetID}\n` +
                     `⚙️ Commands: ${commands.join(", ")}`,
                     event.threadID,
@@ -243,7 +243,7 @@ module.exports.handleReply = async function ({
         console.error("[THREAD]", error);
 
         return api.sendMessage(
-            "❌ Thread data update korte giye error hoyeche.",
+            "❌ Thread data update करते समय error हो गई।",
             event.threadID,
             event.messageID
         );
@@ -284,7 +284,7 @@ module.exports.run = async function ({
 
             if (global.data.threadBanned.has(targetID)) {
                 return api.sendMessage(
-                    `⚠️ এই Thread আগে থেকেই banned.\n\n🆔 ${targetID}`,
+                    `⚠️ ये Thread पहले से banned है।\n\n🆔 ${targetID}`,
                     event.threadID,
                     event.messageID
                 );
@@ -324,7 +324,7 @@ module.exports.run = async function ({
 
             if (!global.data.threadBanned.has(targetID)) {
                 return api.sendMessage(
-                    `⚠️ এই Thread banned অবস্থায় নেই.\n\n🆔 ${targetID}`,
+                    `⚠️ ये Thread banned हालत में नहीं है।\n\n🆔 ${targetID}`,
                     event.threadID,
                     event.messageID
                 );
@@ -365,7 +365,7 @@ module.exports.run = async function ({
 
             if (!commands.length) {
                 return api.sendMessage(
-                    "⚠️ যে command ban করতে চান সেটি দিন।\n\nExample: /thread bancommand 123456 help",
+                    "⚠️ जो command ban करना है वो दें।\n\nExample: /thread bancommand 123456 help",
                     event.threadID,
                     event.messageID
                 );
@@ -411,7 +411,7 @@ module.exports.run = async function ({
 
             if (!commands.length) {
                 return api.sendMessage(
-                    "⚠️ যে command unban করতে চান সেটি দিন।",
+                    "⚠️ जो command unban करना है वो दें।",
                     event.threadID,
                     event.messageID
                 );
@@ -450,7 +450,7 @@ module.exports.run = async function ({
 
             if (!keyword) {
                 return api.sendMessage(
-                    "⚠️ Search করার জন্য group name দিন।",
+                    "⚠️ Search करने के लिए group name दें।",
                     event.threadID,
                     event.messageID
                 );
@@ -474,7 +474,7 @@ module.exports.run = async function ({
 
             if (!results.length) {
                 return api.sendMessage(
-                    "❌ কোনো Thread পাওয়া যায়নি.",
+                    "❌ कोई Thread नहीं मिला।",
                     event.threadID,
                     event.messageID
                 );
@@ -507,7 +507,7 @@ module.exports.run = async function ({
             return api.sendMessage(
                 banned.length
                     ? `» Banned Thread List\n\n${banned.join("\n\n")}`
-                    : "» Banned Thread List\n\n● No banned thread found.",
+                    : "» Banned Thread List\n\n● कोई banned thread नहीं मिला।",
                 event.threadID,
                 event.messageID
             );
