@@ -32,6 +32,7 @@ module.exports.run = async function ({ event, api }) {
 
   if (!targetID) {
     return api.sendMessage(
+      "किसी को reply करें या mention करें......\n" +
       "Please reply or mention someone......",
       threadID,
       messageID
@@ -55,9 +56,14 @@ module.exports.run = async function ({ event, api }) {
       { responseType: "arraybuffer", timeout: 30000 }
     );
 
+    // ---------- Cache Folder Auto-Create ----------
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
     const imgPath = path.join(
-      __dirname,
-      "cache",
+      cacheDir,
       `bro_${senderID}_${targetID}.png`
     );
 
@@ -65,22 +71,30 @@ module.exports.run = async function ({ event, api }) {
 
     return api.sendMessage(
       {
-        body: `🌸 𝐓𝐞𝐫𝐚 𝐁𝐚𝐢 🌸
-        
-🤝 ভাই–ব্রাদারের বন্ধন চিরকাল অটুট থাকুক 💖
-🫱এই নে, রাখ তোর ভাইরে ❤️  
-
-👑 𝐁𝐑𝐎𝐓𝐇𝐄𝐑 𝐅𝐎𝐑𝐄𝐕𝐄𝐑 🩷🌸`,
+        body:
+          `🌸 𝐓𝐞𝐫𝐚 𝐁𝐚𝐢 🌸\n\n` +
+          `🤝 भाई-बंधु का रिश्ता हमेशा अटूट रहे 💖\n` +
+          `🫱 ये ले, अपने भाई को रख ❤️\n\n` +
+          `👑 𝐁𝐑𝐎𝐓𝐇𝐄𝐑 𝐅𝐎𝐑𝐄𝐕𝐄𝐑 🩷🌸\n` +
+          `━━━━━━━━━━━━━━━━━\n` +
+          `🤝 May the bond of brothers always remain unbroken 💖\n` +
+          `🫱 Here, keep your brother ❤️\n` +
+          `👑 𝐁𝐑𝐎𝐓𝐇𝐄𝐑 𝐅𝐎𝐑𝐄𝐕𝐄𝐑 🩷🌸`,
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        try {
+          fs.unlinkSync(imgPath);
+        } catch (_) {}
+      },
       messageID
     );
 
   } catch (e) {
     return api.sendMessage(
-      "API Error Call Boss SAHU",
+      "❌ API Error, Boss Rishu को call करें\n" +
+      "❌ API Error, Call Boss Rishu",
       threadID,
       messageID
     );
