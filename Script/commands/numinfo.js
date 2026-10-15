@@ -24,9 +24,10 @@ module.exports.run = async function ({
         messageID
     } = event;
 
+    // ❌ Number nahi diya
     if (!args[0]) {
         return api.sendMessage(
-            "⚠️ দয়া করে একটি নম্বর দিন!\n\n𝗨𝘀𝗮𝗴𝗲: /numinfo <number>",
+            "⚠️ कृपया एक number दें!\n\n𝗨𝘀𝗮𝗴𝗲: /numinfo <number>",
             threadID,
             messageID
         );
@@ -34,6 +35,7 @@ module.exports.run = async function ({
 
     let number = String(args[0]).trim();
 
+    // 🔧 Number normalize karo
     if (number.startsWith("+88")) {
         number = number.substring(1);
     }
@@ -42,15 +44,17 @@ module.exports.run = async function ({
         number = "88" + number;
     }
 
+    // ✅ Bangladeshi number validation
     if (!/^8801\d{9}$/.test(number)) {
         return api.sendMessage(
-            "⚠️ সঠিক বাংলাদেশের মোবাইল নম্বর দিন।",
+            "⚠️ सही बांग्लादेशी मोबाइल number दें।",
             threadID,
             messageID
         );
     }
 
     try {
+        // ⏳ Reaction
         if (typeof api.setMessageReaction === "function") {
             api.setMessageReaction(
                 "⌛",
@@ -69,9 +73,10 @@ module.exports.run = async function ({
 
         const data = response.data;
 
+        // ❌ Data nahi mila
         if (!data || !data.info || !data.info.length) {
             return api.sendMessage(
-                "⚠️ কোনো public information পাওয়া যায়নি।",
+                "⚠️ कोई public information नहीं मिली।",
                 threadID,
                 messageID
             );
@@ -91,7 +96,7 @@ module.exports.run = async function ({
             `📞 Number: ${number}`,
             `📡 Type: ${types.length ? types.join(", ") : "Not found"}`,
             "",
-            "ℹ️ ব্যক্তিগত নাম বা ব্যক্তিগত তথ্য দেখানো হচ্ছে না।"
+            "ℹ️ निजी नाम या निजी जानकारी नहीं दिखाई जा रही।"
         ].join("\n");
 
         return api.sendMessage(
@@ -106,8 +111,9 @@ module.exports.run = async function ({
             error.response?.data || error.message
         );
 
+        // ❌ API error
         return api.sendMessage(
-            "⚠️ তথ্য সংগ্রহ করা সম্ভব হয়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+            "⚠️ जानकारी नहीं मिल पाई। कुछ देर बाद दोबारा कोशिश करें।",
             threadID,
             messageID
         );
