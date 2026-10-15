@@ -44,8 +44,8 @@ module.exports.run = async function({ api, event }) {
 
     const cacheDir = __dirname + "/cache";
 
-    const bgPath = cacheDir + `/hack_${event.senderID}.png`;
-    const avatarPath = cacheDir + `/avatar_${event.senderID}.png`;
+    const bgPath = cacheDir + `/hack_${event.senderID}_${Date.now()}.png`;
+    const avatarPath = cacheDir + `/avatar_${event.senderID}_${Date.now()}.png`;
 
     try {
         fs.ensureDirSync(cacheDir);
@@ -64,7 +64,7 @@ module.exports.run = async function({ api, event }) {
             targetID = event.senderID;
         }
 
-        
+        // 👤 Get user name
         const userInfo = await api.getUserInfo(targetID);
         const name =
             userInfo &&
@@ -73,16 +73,17 @@ module.exports.run = async function({ api, event }) {
                 ? userInfo[targetID].name
                 : "Unknown User";
 
-        
+        // 🖼️ Background image URL
         const backgroundUrl =
             "https://drive.google.com/uc?id=1RwJnJTzUmwOmP3N_mZzxtp63wbvt9bLZ";
 
-        
+        // 👤 Avatar URL
         const avatarUrl =
             `https://graph.facebook.com/${targetID}/picture` +
             `?width=720&height=720` +
             `&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
+        // ⬇️ Download both images in parallel
         const [avatarResponse, backgroundResponse] = await Promise.all([
             axios.get(avatarUrl, {
                 responseType: "arraybuffer",
@@ -94,74 +95,45 @@ module.exports.run = async function({ api, event }) {
             })
         ]);
 
-        fs.writeFileSync(
-            avatarPath,
-            Buffer.from(avatarResponse.data)
-        );
-
-        fs.writeFileSync(
-            bgPath,
-            Buffer.from(backgroundResponse.data)
-        );
+        fs.writeFileSync(avatarPath, Buffer.from(avatarResponse.data));
+        fs.writeFileSync(bgPath, Buffer.from(backgroundResponse.data));
 
         const background = await loadImage(bgPath);
         const avatar = await loadImage(avatarPath);
 
-        const canvas = createCanvas(
-            background.width,
-            background.height
-        );
-
+        const canvas = createCanvas(background.width, background.height);
         const ctx = canvas.getContext("2d");
 
-        
-        ctx.drawImage(
-            background,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+        // 🎨 Draw background
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        
+        // ✍️ Draw name text
         ctx.font = "400 23px Arial";
         ctx.fillStyle = "#1878F3";
         ctx.textAlign = "start";
 
         const lines = this.wrapText(ctx, name, 1160);
-
         const lineHeight = 28;
 
         lines.forEach((line, index) => {
-            ctx.fillText(
-                line,
-                200,
-                497 + index * lineHeight
-            );
+            ctx.fillText(line, 200, 497 + index * lineHeight);
         });
 
-    
-        ctx.drawImage(
-            avatar,
-            83,
-            437,
-            100,
-            101
-        );
+        // 👤 Draw avatar
+        ctx.drawImage(avatar, 83, 437, 100, 101);
 
-        
+        // 💾 Save result
         const imageBuffer = canvas.toBuffer("image/png");
-
         fs.writeFileSync(bgPath, imageBuffer);
 
-        
+        // 🧹 Cleanup avatar temp
         if (fs.existsSync(avatarPath)) {
             fs.unlinkSync(avatarPath);
         }
 
         return api.sendMessage(
             {
-                body: "তোর আইডিটা হ্যাক করা হলো 😽✔️",
+                body: "तेरा ID हैक कर लिया गया 😽✔️",
                 attachment: fs.createReadStream(bgPath)
             },
             event.threadID,
@@ -176,14 +148,14 @@ module.exports.run = async function({ api, event }) {
     } catch (error) {
         console.error("[HACK CMD ERROR]", error);
 
-    
+        // 🧹 Cleanup on error
         try {
             if (fs.existsSync(avatarPath)) fs.unlinkSync(avatarPath);
             if (fs.existsSync(bgPath)) fs.unlinkSync(bgPath);
         } catch (e) {}
 
         return api.sendMessage(
-            "কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।",
+            "कुछ गड़बड़ हो गई। दोबारा कोशिश करें।",
             event.threadID,
             event.messageID
         );
