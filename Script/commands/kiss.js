@@ -32,18 +32,22 @@ module.exports.run = async function ({ event, api }) {
 
   if (!targetID) {
     return api.sendMessage(
-      "Please reply or mention someone......",
+      "⚠️ कृपया किसी को reply या mention करें......",
       threadID,
       messageID
     );
   }
 
+  let imgPath;
+
   try {
     const apiList = await axios.get(
-      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json"
+      "https://gitlab.com/shahadat-sahu/sahu-api/-/raw/main/API.json",
+      { timeout: 15000 }
     );
 
-    const AVATAR_CANVAS_API = apiList.data.AvatarCanvas;
+    const AVATAR_CANVAS_API = apiList?.data?.AvatarCanvas;
+    if (!AVATAR_CANVAS_API) throw new Error("AvatarCanvas API not found");
 
     const res = await axios.post(
       `${AVATAR_CANVAS_API}/api`,
@@ -55,25 +59,28 @@ module.exports.run = async function ({ event, api }) {
       { responseType: "arraybuffer", timeout: 30000 }
     );
 
-    const imgPath = path.join(
-      __dirname,
-      "cache",
-      `kiss_${senderID}_${targetID}.png`
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+    imgPath = path.join(
+      cacheDir,
+      `kiss_${senderID}_${targetID}_${Date.now()}.png`
     );
 
-    fs.writeFileSync(imgPath, res.data);
+    fs.writeFileSync(imgPath, Buffer.from(res.data));
 
+    // 💌 Captions (Hindi)
     const captions = [
-      "কারণে অকারণে প্রতিদিন নিয়ম করে, তোমার মায়াতে জড়িয়ে পড়ছি আমি বারেবার!🌷",
-      "তোমাকে কেন ভালোবাসি তার কোন বিশেষ কারণ আমার জানা নাই! কিন্তু তোমার কাছে সারাজীবন থেকে যাওয়ার হাজারটা কারণ আমার কাছে আছে!💚",
-      "তোমার সাথে কাটানো সময়গুলোর কথা চিন্তা করলে মনে হয়, এই এক জনম তোমার সাথে অনেক কম সময়!😘",
-      "প্রিয় তুমি কি আমার জীবনের সেই গল্প হবে? যেই গল্পের শুরু থাকবে, কিন্তু কোনো শেষ থাকবে না!♥️",
-      "তুমি পাশে থাকলে সবকিছু সুন্দর মনে হয়, জীবন যেন একটা মধুর কবিতায় রূপ নেয়!😍",
-      "তোমাকে ছাড়া জীবনটা অসম্পূর্ণ, তুমি আমার ভালোবাসার পূর্ণতা!🧡",
-      "তুমি আমার স্বপ্ন, তুমি আমার জীবনের প্রতিটি সুন্দর মুহূর্ত!🌻",
-      "আমার চোখে তোমার অস্থিত্ব খোঁজতে এসোনা, হারিয়ে যাবে! কেননা আমার পুরোটা-জুরেই তোমারই নির্বাক আনাগোনা!🌺",
-      "তোমাতে শুরু তোমাতেই শেষ, তুমি না থাকলে আমাদের গল্প এখানেই শেষ!😘",
-      "ভালোবাসা যদি কোনো অনুভূতি হয়, তাহলে তোমার প্রতি আমার অনুভূতি পৃথিবীর সেরা অনুভূতি।🌻ღ🌺"
+      "बिना वजह हर रोज़ एक आदत सी बन गई, तेरी माया में फिर-फिर उलझता जा रहा हूँ!🌷",
+      "तुझसे क्यों प्यार करता हूँ, इसका कोई खास कारण मुझे नहीं पता! पर तेरे साथ सारी ज़िंदगी रहने के हज़ार कारण मेरे पास हैं!💚",
+      "तेरे साथ बिताए पलों के बारे में सोचूँ, तो लगता है ये एक जनम तेरे साथ बहुत कम है!😘",
+      "प्रिय तू क्या मेरी ज़िंदगी की वो कहानी बनेगी? जिसकी शुरुआत होगी, पर कोई अंत न होगा!♥️",
+      "तू पास हो तो सब कुछ सुंदर लगता है, ज़िंदगी जैसे एक मीठी कविता बन जाती है!😍",
+      "तेरे बिना ज़िंदगी अधूरी है, तू मेरे प्यार की पूर्णता है!🧡",
+      "तू मेरा सपना है, तू मेरी ज़िंदगी का हर खूबसूरत पल है!🌻",
+      "मेरी आँखों में अपनी हस्ती ढूँढने मत आना, खो जाओगे! क्योंकि मेरे पूरे वजूद में तेरी ही खामोश आहट है!🌺",
+      "तुझसे शुरू तुझ पर ही खत्म, तू न हो तो हमारी कहानी यहीं खत्म!😘",
+      "अगर प्यार कोई एहसास है, तो तेरे लिए मेरा एहसास दुनिया का सबसे बेहतरीन एहसास है।🌻ღ🌺"
     ];
 
     const caption = captions[Math.floor(Math.random() * captions.length)];
@@ -84,13 +91,22 @@ module.exports.run = async function ({ event, api }) {
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+      },
       messageID
     );
 
-  } catch {
+  } catch (e) {
+    // 🧹 Cleanup on error
+    if (imgPath && fs.existsSync(imgPath)) {
+      try { fs.unlinkSync(imgPath); } catch {}
+    }
+
+    console.error("[KISS CMD ERROR]", e.message || e);
+
     return api.sendMessage(
-      "API Error Call Boss SAHU",
+      "❌ API Error | Call Boss RISHU",
       threadID,
       messageID
     );
