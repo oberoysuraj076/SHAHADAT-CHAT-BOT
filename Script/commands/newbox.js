@@ -18,9 +18,10 @@ module.exports.run = async function ({
         const senderID = String(event.senderID);
         const body = String(event.body || "");
 
+        // 🧩 "|" zaroori hai separator ke liye
         if (!body.includes("|")) {
             return api.sendMessage(
-                "⚠️ Usage:\nnewbox @tag1 @tag2 | Group Name",
+                "⚠️ उपयोग:\nnewbox @tag1 @tag2 | Group Name",
                 event.threadID,
                 event.messageID
             );
@@ -35,7 +36,7 @@ module.exports.run = async function ({
 
         if (!groupName) {
             return api.sendMessage(
-                "⚠️ Please enter a group name.\n\nExample:\nnewbox @user1 @user2 | My Group",
+                "⚠️ कृपया group का नाम लिखें।\n\nउदाहरण:\nnewbox @user1 @user2 | My Group",
                 event.threadID,
                 event.messageID
             );
@@ -54,9 +55,10 @@ module.exports.run = async function ({
             ...new Set(members)
         ];
 
+        // 👥 Kam se kam 1 aur user hona chahiye
         if (uniqueMembers.length < 2) {
             return api.sendMessage(
-                "⚠️ কমপক্ষে একজন user-কে mention করুন।",
+                "⚠️ कम से कम एक user को mention करें।",
                 event.threadID,
                 event.messageID
             );
@@ -74,14 +76,14 @@ module.exports.run = async function ({
                     );
 
                     return api.sendMessage(
-                        "⚠️ Group তৈরি করা যায়নি।",
+                        "⚠️ Group नहीं बनाया जा सका।",
                         event.threadID,
                         event.messageID
                     );
                 }
 
                 return api.sendMessage(
-                    `✅ Group created successfully!\n\n` +
+                    `✅ Group सफलतापूर्वक बन गया!\n\n` +
                     `👥 Group: ${groupName}`,
                     event.threadID,
                     event.messageID
@@ -96,7 +98,7 @@ module.exports.run = async function ({
         );
 
         return api.sendMessage(
-            "⚠️ Group তৈরি করার সময় একটি সমস্যা হয়েছে।",
+            "⚠️ Group बनाते समय एक समस्या हुई।",
             event.threadID,
             event.messageID
         );
