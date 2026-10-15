@@ -17,17 +17,18 @@ module.exports.handleReply = async function ({ api, event, handleReply }) {
 
   const pending = handleReply.pending;
 
-  const notify = `🌸 আপনাদের গ্রুপে চলে এসেছি — ${global.config.BOTNAME}!
+  // 💬 Hindi welcome message
+  const notify = `🌸 आपके ग्रुप में आ गया हूँ — ${global.config.BOTNAME}!
 
-♡ এখন থেকে আপনাদের সাথে আড্ডা, বিনোদন এবং বিভিন্ন কাজে পাশে থাকব।
+♡ अब से आप सबके साथ मस्ती, मनोरंजन और हर काम में साथ रहूँगा।
 
-› সাহায্য পেতে ব্যবহার করুন:
+› मदद पाने के लिए use करें:
 ${global.config.PREFIX}help
 
-✦ ${global.config.BOTNAME} ব্যবহার করার জন্য ধন্যবাদ।
-♡ আশা করি আমাদের সাথে সুন্দর সময় কাটাবেন!`;
+✦ ${global.config.BOTNAME} use करने के लिए शुक्रिया।
+♡ उम्मीद है हमारे साथ अच्छा समय बिताएँगे!`;
 
-  
+  // ❌ call — sab groups se nikal jao
   if (body === "call") {
     let count = 0;
 
@@ -42,13 +43,13 @@ ${global.config.PREFIX}help
     }
 
     return api.sendMessage(
-      `⚠️ Successfully rejected ${count} group(s)!`,
+      `⚠️ ${count} group(s) successfully reject कर दिए गए!`,
       event.threadID,
       event.messageID
     );
   }
 
-  
+  // ✅ all — sab groups ko approve karo
   if (body === "all") {
     let count = 0;
 
@@ -60,7 +61,7 @@ ${global.config.PREFIX}help
     }
 
     return api.sendMessage(
-      `✅ Successfully approved ${count} group(s)!`,
+      `✅ ${count} group(s) successfully approve कर दिए गए!`,
       event.threadID,
       event.messageID
     );
@@ -80,7 +81,7 @@ ${global.config.PREFIX}help
 
     if (index <= 0 || index > pending.length) {
       return api.sendMessage(
-        `⚠️ ${num} is not a valid number.`,
+        `⚠️ ${num} एक सही number नहीं है।`,
         event.threadID,
         event.messageID
       );
@@ -106,8 +107,8 @@ ${global.config.PREFIX}help
 
   return api.sendMessage(
     rejectMode
-      ? `📛 Successfully rejected ${count} group(s)!`
-      : `✅ Successfully approved ${count} group(s)!`,
+      ? `📛 ${count} group(s) successfully reject कर दिए गए!`
+      : `✅ ${count} group(s) successfully approve कर दिए गए!`,
     event.threadID,
     event.messageID
   );
@@ -133,7 +134,7 @@ module.exports.run = async function ({ api, event }) {
 
     if (!list.length) {
       return api.sendMessage(
-        "✅ No pending groups found.",
+        "✅ कोई pending group नहीं मिला।",
         threadID,
         messageID
       );
@@ -151,11 +152,11 @@ module.exports.run = async function ({ api, event }) {
 
 ${text}
 
-Reply with:
-• 1 2 3 — Approve selected
-• all — Approve all
-• c1 c2 — Reject selected
-• call — Reject all`,
+Reply करें:
+• 1 2 3 — चुने हुए approve करें
+• all — सब approve करें
+• c1 c2 — चुने हुए reject करें
+• call — सब reject करें`,
       threadID,
       (err, info) => {
         if (err) return;
@@ -174,7 +175,7 @@ Reply with:
     console.error(e);
 
     return api.sendMessage(
-      "❌ Failed to get pending groups.",
+      "❌ Pending groups नहीं मिल पाए।",
       threadID,
       messageID
     );
