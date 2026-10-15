@@ -5,7 +5,7 @@ const path = require("path");
 module.exports.config = {
     name: "hindu",
     aliases: ["hinduvideo", "bhakti", "mandir"],
-    version: "1.0.0",
+    version: "1.0.2",
     hasPermssion: 0,
     credits: "SHAHADAT SAHU",
     description: "Send a random Hindu devotional video",
@@ -19,21 +19,20 @@ module.exports.config = {
     }
 };
 
-// 📌 Apni Hindu / Bhakti videos ke Imgur .mp4 links yahan daalein
+// 🕉️ Hindu / Bhakti video links (Catbox)
 const videos = [
-    "https://i.imgur.com/XXXXXXXX1.mp4",
-    "https://i.imgur.com/XXXXXXXX2.mp4",
-    "https://i.imgur.com/XXXXXXXX3.mp4",
-    "https://i.imgur.com/XXXXXXXX4.mp4",
-    "https://i.imgur.com/XXXXXXXX5.mp4",
-    "https://i.imgur.com/XXXXXXXX6.mp4",
-    "https://i.imgur.com/XXXXXXXX7.mp4",
-    "https://i.imgur.com/XXXXXXXX8.mp4",
-    "https://i.imgur.com/XXXXXXXX9.mp4",
-    "https://i.imgur.com/XXXXXXXX10.mp4"
+    "https://files.catbox.moe/1royi5.mp4",
+    "https://files.catbox.moe/ooy2k5.mp4",
+    "https://files.catbox.moe/kpbte9.mp4",
+    "https://files.catbox.moe/kqk4m2.mp4",
+    "https://files.catbox.moe/x81n8l.mp4",
+    "https://files.catbox.moe/y0o68y.mp4",
+    "https://files.catbox.moe/u29i30.mp4",
+    "https://files.catbox.moe/gbvq8i.mp4",
+    "https://files.catbox.moe/mxtao5.mp4"
 ];
 
-// 🕉️ Hindu greetings / captions (Hindi)
+// 🚩 Hindu greetings / captions (Hindi)
 const captions = [
     "🕉️ ॐ नमः शिवाय!\n\nजय श्री राम 🚩\nभगवान हम सबका कल्याण करें। 🙏",
     "🚩 जय श्री कृष्ण!\n\nराधे राधे 🌸\nहर हर महादेव 🕉️",
@@ -69,15 +68,6 @@ module.exports.run = async function ({ api, event }) {
                 )
             ];
 
-        // ⚠️ Placeholder check
-        if (videoUrl.includes("XXXXXXXX")) {
-            return api.sendMessage(
-                "⚠️ Pehle `videos` array mein apne Imgur .mp4 links daalein!",
-                event.threadID,
-                event.messageID
-            );
-        }
-
         api.setMessageReaction(
             "⏳",
             event.messageID,
@@ -91,7 +81,12 @@ module.exports.run = async function ({ api, event }) {
                 responseType: "stream",
                 timeout: 60000,
                 maxContentLength: Infinity,
-                maxBodyLength: Infinity
+                maxBodyLength: Infinity,
+                headers: {
+                    "User-Agent":
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer": "https://catbox.moe/"
+                }
             }
         );
 
