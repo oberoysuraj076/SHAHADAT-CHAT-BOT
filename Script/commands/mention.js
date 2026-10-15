@@ -21,6 +21,7 @@ module.exports.run = async ({ api, event, args }) => {
 
     const users = new Map();
 
+    // 🎯 Reply wale user ko add karo
     if (messageReply?.senderID) {
         const id = String(messageReply.senderID);
 
@@ -32,6 +33,7 @@ module.exports.run = async ({ api, event, args }) => {
         });
     }
 
+    // 🎯 Mention wale users ko add karo
     for (const id of Object.keys(mentions || {})) {
         const userID = String(id);
 
@@ -45,12 +47,13 @@ module.exports.run = async ({ api, event, args }) => {
 
     if (!users.size) {
         return api.sendMessage(
-            "⚠️ Reply করুন অথবা user-কে mention করুন!",
+            "⚠️ किसी को Reply करें या user को mention करें!",
             threadID,
             messageID
         );
     }
 
+    // 🔢 Count nikalo (last arg)
     let count = parseInt(
         args[args.length - 1],
         10
@@ -89,7 +92,7 @@ module.exports.run = async ({ api, event, args }) => {
             });
 
             body +=
-                "\n\n🐸 চিপা থেকে বের হও! 😄";
+                "\n\n🐸 चुप से बाहर निकलो! 😄";
 
             await api.sendMessage(
                 {
@@ -99,6 +102,7 @@ module.exports.run = async ({ api, event, args }) => {
                 threadID
             );
 
+            // ⏱️ 1 second gap between repeats
             if (i < repeatCount - 1) {
                 await new Promise(resolve =>
                     setTimeout(resolve, 1000)
@@ -112,7 +116,7 @@ module.exports.run = async ({ api, event, args }) => {
             );
 
             return api.sendMessage(
-                "❌ Mention পাঠাতে সমস্যা হয়েছে।",
+                "❌ Mention भेजने में समस्या हुई।",
                 threadID,
                 messageID
             );
