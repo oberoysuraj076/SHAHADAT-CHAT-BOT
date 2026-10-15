@@ -1,78 +1,558 @@
+const fs = require("fs-extra");
+const path = require("path");
+
 module.exports.config = {
- name: "autoreact",
- version: "1.3.0",
- hasPermission: 0,
- credits: "SHAHADAT SAHU",
- description: "Bot React",
- commandCategory: "No Prefix",
- cooldowns: 0,
+  name: "autoreact",
+  version: "9.0.0",
+  hasPermssion: 0,
+  credits: "SHAHADAT SAHU",
+  description: "Ultimate Masti Bot v9 - Jokes + Shayari + Gender-based React!",
+  commandCategory: "FUN",
+  usages: "[.masti status]",
+  cooldowns: 1,
+  usePrefix: true
 };
 
-module.exports.handleEvent = async ({ api, event }) => {
- const threadData = global.data.threadData.get(event.threadID) || {};
- if (threadData["🥰"] !== true) return;
+/* ==================== GENDER STORAGE ==================== */
+const GENDER_FILE = path.join(__dirname, "cache", "gender.json");
 
- const emojis = [
- "😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇",
- "🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚",
- "😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🤩",
- "🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣",
- "😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬",
- "🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗",
- "🤭","🫢","🫣","🤫","🤔","🫡","🤐","🤨","😐","😑",
- "😶","🙄","😬","😮","😯","😲","😴","🤤","😪","😵",
- "🤐","🥴","🤢","🤮","🤧","😷","🤠","🥸","😈","👿",
- "👹","👺","🤡","💩","👻","💀","☠️","👽","👾","🤖",
+function loadGender() {
+  try {
+    return fs.existsSync(GENDER_FILE)
+      ? JSON.parse(fs.readFileSync(GENDER_FILE, "utf8"))
+      : {};
+  } catch { return {}; }
+}
 
- "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","🩷",
- "🩵","🩶","💔","❤️‍🔥","❤️‍🩹","💕","💞","💓","💗","💖",
- "💘","💝","💟","❣️","💯","💫","✨","⭐","🌟","🔥",
- "💥","⚡","🌈","☀️","🌙","🌸","🌺","🌻","🌹","🌷",
- "🌼","💐","🍀","🌿","🍁","🍂","🍃","🌱","🌴","🌵",
+function saveGender(data) {
+  try {
+    fs.ensureDirSync(path.dirname(GENDER_FILE));
+    fs.writeFileSync(GENDER_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error("[GENDER SAVE]", e.message);
+  }
+}
 
- "👍","👎","👌","✌️","🤞","🤟","🤘","🤙","👋","👏",
- "🙌","👐","🤲","🙏","💪","🫶","🫰","🤌","✍️","🤳",
- "💅","👀","👄","🫦","👂","👃","🧠","❤️‍🔥","💋","💏",
+/* ==================== NAME-BASED GENDER ==================== */
+const FEMALE_KEYWORDS = [
+  "akter","akhtar","begum","bibi","khatun","khanam","sultana","banu","bano",
+  "parvin","parveen","yasmin","nasrin","nusrat","sabina","sabrina","shirin",
+  "priya","pooja","puja","neha","sneha","riya","diya","siya","kiya","niya",
+  "jiya","piya","tiya","anjali","anju","asha","bharti","bhavna","chandni",
+  "deepa","divya","gita","geeta","hema","isha","jaya","kavita","komal",
+  "lakshmi","lata","madhuri","meena","mina","naina","nisha","pallavi",
+  "payal","preeti","preity","rachana","radha","rani","rashmi","rekha","renu",
+  "sadhana","sangeeta","sangita","sapna","saroj","shanti","sharda","sheela",
+  "shila","shobha","shweta","sonal","sonia","soniya","sunita","sushma",
+  "swati","tara","tulsi","uma","usha","veena","vina","vidya","zara","zoya",
+  "fatima","aisha","ayesha","mariam","maryam","sana","saba","sara","sarah",
+  "noor","nur","laila","layla","maya","ritu","ritika","kritika","anita",
+  "amrita","arpita","aarti","arti","jyoti","khushi","muskan","mehak","mahak",
+  "nazia","shabnam","shabana","farhana","farzana","ruksana","taslima",
+  "sharmin","jannat","jannatul","maria","mim","momo","mita","mitu","tania",
+  "tisha","tithi","urmi","sumi","sumaiya","nipa","nupur","sraboni","raya",
+  "raisa","rhea","ria","rupa","rupsa","shipra","soma","sonali","sushmita",
+  "swapna","tanjila","tanni","trisha","tuli","tumpa","urfi","varsha",
+  "dipika","ipsita","ishita","jhilik","jhumur","kakoli","kanika","karishma",
+  "kashish","kavya","laboni","lina","lisa","liza","madhu","madhabi","malati",
+  "maliha","manisha","meghna","meher","mitali","mohini","moumita","mousumi",
+  "mukta","nabanita","nadira","nandita","nazma","neelam","nibedita","nilima",
+  "nirmala","parul","papiya","pratima","prema","purnima","ratna","reba",
+  "rina","rita","ruma","sabana","sabita","sagarika","sakina","salma","samira",
+  "sanjida","seema","shima","shova","simran","sohagi","sonam","suborna",
+  "suchitra","sudipta","sujata","sukla","sunanda","suparna","susmita",
+  "tanushree","tripti","vandana","yashmin","zarin","zeba"
+];
 
- "🎉","🎊","🎈","🎁","🎂","🎀","🎵","🎶","🎸","🎹",
- "🥁","🎧","🎤","🎬","🎮","🏆","🥇","🥈","🥉","⚽",
- "🏀","🏈","⚾","🎾","🏐","🏏","🏓","🥊","🏋️","🚀",
+const MALE_KEYWORDS = [
+  "khan","mia","miah","sheikh","shekh","sahu","shahadat","shahid","sajid",
+  "sajib","sabbir","sohel","sohail","sohag","sohan","sourav","sagar","sagor",
+  "sakib","salauddin","salim","selim","samim","samiul","sanju","sarwar",
+  "sayed","sayeed","sayem","shafin","shafiq","shahin","shakib","shamim",
+  "shanto","sharif","shihab","shimul","shipon","sojib","subir","sudip",
+  "sujon","sumon","sunny","surjo","sushil","tanvir","tareq","tarik",
+  "tawhid","tonmoy","tuhin","tushar","wahid","wasim","yasin","zahid",
+  "zakir","zaman","zubair","zunaid","abir","adnan","ahad","ahmed","ahsan",
+  "akash","akib","alam","alamin","alif","amin","amir","anik","anis","arafat",
+  "arif","arnob","asad","asadul","ashik","ashraf","asif","atif","ayan",
+  "azad","aziz","badhon","bijoy","bikash","billal","biplob","bishal",
+  "chandan","dipu","emon","erfan","farhan","fahim","faisal","farhad","farid",
+  "firoz","habib","hasan","hasib","hridoy","imran","iqbal","irfan","islam",
+  "ismail","jahid","jamal","jasim","jibon","joy","jubayer","kamal","kamrul",
+  "kawsar","kazi","khaled","liton","mahadi","mahbub","mahin","mahir","mamun",
+  "masud","mehedi","miraj","mizan","mohammad","mohsin","monir","mostafa",
+  "mukul","munna","mushfiq","mustafa","nadim","naim","nazmul","nazim",
+  "nayeem","nayan","noman","nurul","omar","osman","rafi","rafid","rafiq",
+  "rahim","rakib","rakin","rakibul","rana","rasel","rashid","rayhan","razib",
+  "redwan","rehan","riad","rifat","riyad","robi","robin","rony","rubel",
+  "rumi","ruhul","sadat","shahriar","siam","sifat","sihab","tahsin","tanim",
+  "tanzim","tonoy","raj","raju","ravi","rohit","rahul","rajesh","rakesh",
+  "ramesh","suresh","mahesh","ganesh","mukesh","naresh","amit","sumit",
+  "ajit","sanjay","vijay","ajay","arjun","karan","varun","tarun","rohan",
+  "mohan","ram","shyam","hari","krishna","shiv","kabir","vivek","manish",
+  "harish","satish","sandeep","sandip","sanjib","santanu","sarthak",
+  "saurabh","shib","shivam","shubham","subham","sourav","souvik","subho",
+  "suraj","sushant","soumen","soumya"
+];
 
- "🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯",
- "🦁","🐮","🐷","🐸","🐵","🙈","🙉","🙊","🐔","🐧",
- "🐦","🦋","🐝","🐞","🦄","🐴","🐢","🐍","🦎","🐊",
- "🐳","🐬","🐟","🐠","🦈","🐙","🦀","🦐","🦑","🐚"
- ];
+function guessGenderFromName(name) {
+  if (!name) return "unknown";
+  const lower = name.toLowerCase();
+  const words = lower.split(/[\s_.-]+/);
 
- const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  for (const word of words) {
+    if (FEMALE_KEYWORDS.includes(word)) return "female";
+    if (MALE_KEYWORDS.includes(word)) return "male";
+  }
+  for (const word of words) {
+    if (word.length < 3) continue;
+    for (const fk of FEMALE_KEYWORDS) {
+      if (word.includes(fk) || fk.includes(word)) return "female";
+    }
+    for (const mk of MALE_KEYWORDS) {
+      if (word.includes(mk) || mk.includes(word)) return "male";
+    }
+  }
+  return "unknown";
+}
 
- api.setMessageReaction(randomEmoji, event.messageID, err => {
-  if (err) console.error("Error sending reaction:", err);
- }, true);
+async function getUserGender(api, senderID) {
+  const genderDB = loadGender();
+  let gender = genderDB[senderID];
+
+  if (!gender || gender === "unknown") {
+    try {
+      const info = await api.getUserInfo(senderID);
+      const name = info[senderID]?.name || "";
+      gender = guessGenderFromName(name);
+      genderDB[senderID] = gender;
+      saveGender(genderDB);
+    } catch {
+      gender = "unknown";
+    }
+  }
+  return gender;
+}
+
+/* ==================== ANTI-LOOP GUARD ==================== */
+const loopGuard = {
+  settings: {
+    rapidGapMs: 3000,
+    maxRapidChain: 5,
+    windowMs: 30000,
+    maxTriggersInWindow: 9,
+    muteMs: 10 * 60 * 1000
+  },
+  threads: new Map(),
+
+  getThread(threadID) {
+    let st = this.threads.get(threadID);
+    if (!st) {
+      st = {
+        lastTriggerAt: 0,
+        rapidChain: 0,
+        triggerTimes: [],
+        pausedUntil: 0,
+        lastNoticeAt: 0
+      };
+      this.threads.set(threadID, st);
+    }
+    return st;
+  },
+
+  check(api, event) {
+    const now = Date.now();
+    const threadID = event.threadID;
+    const st = this.getThread(threadID);
+
+    try {
+      if (String(event.senderID) === String(api.getCurrentUserID())) return false;
+    } catch {}
+
+    if (st.pausedUntil) {
+      if (now < st.pausedUntil) return false;
+      st.pausedUntil = 0;
+      st.rapidChain = 0;
+      st.triggerTimes = [];
+    }
+
+    const gap = st.lastTriggerAt ? now - st.lastTriggerAt : Infinity;
+    st.lastTriggerAt = now;
+
+    if (gap < this.settings.rapidGapMs) {
+      st.rapidChain++;
+    } else {
+      st.rapidChain = 0;
+    }
+
+    st.triggerTimes.push(now);
+    while (st.triggerTimes.length && now - st.triggerTimes[0] > this.settings.windowMs) {
+      st.triggerTimes.shift();
+    }
+
+    const loopDetected =
+      st.rapidChain >= this.settings.maxRapidChain ||
+      st.triggerTimes.length > this.settings.maxTriggersInWindow;
+
+    if (loopDetected) {
+      st.pausedUntil = now + this.settings.muteMs;
+      st.rapidChain = 0;
+      st.triggerTimes = [];
+
+      if (now - st.lastNoticeAt > this.settings.muteMs) {
+        st.lastNoticeAt = now;
+        const mins = Math.max(1, Math.round(this.settings.muteMs / 60000));
+        api.sendMessage(
+          `🤖 Bot-to-Bot loop detected!\n` +
+          `इस ग्रुप में automated reply chain पकड़ी गई। Masti Bot ${mins} मिनट के लिए बंद कर दिया गया।\n` +
+          `(Manual command और बाकी features सामान्य काम करेंगे।)`,
+          threadID
+        );
+      }
+      return false;
+    }
+    return true;
+  }
 };
 
-module.exports.run = async ({ api, event, Threads }) => {
- const { threadID, messageID, body } = event;
- const threadData = await Threads.getData(threadID);
+/* ==================== JOKES DATABASE ==================== */
+const jokesDB = {
+  love: [
+    "😂 *Love Joke:*\nलड़का: I love you!\nलड़की: Prove it!\nलड़का: तेरा नाम 100 बार लिख दूँगा!\nलड़की: तो लिख!\nलड़का: (सोचता है) 100 बार? अगले जनम में लिखूँगा!",
+    "💕 *Love Joke:*\nGirlfriend: तुम मुझे कितना love करते हो?\nBoyfriend: WhatsApp unlimited जितना!\nGirlfriend: मतलब?\nBoyfriend: Limit cross करते ही speed slow हो जाती है!",
+    "❤️ *Love Joke:*\nउसने कहा: तुमसे दूर जा रही हूँ!\nमैंने कहा: क्यों?\nबोली: क्योंकि तुम बहुत अच्छे हो!\nमैं: तो अच्छा होना बुराई है?\nबोली: नहीं, पर तुम इतने अच्छे हो कि मैं धोखा नहीं दे सकती!",
+    "💖 *Love Joke:*\nपत्नी: तुम मुझे कभी surprise नहीं देते!\nपतिदेव: क्यों नहीं देता?\nपत्नी: कब दिया?\nपतिदेव: कल रात surprise किया!\nपत्नी: कैसे?\nपतिदेव: सोचते-सोचते सो गया!",
+    "💘 *Love Joke:*\nTeacher: तुम दोनों एक bench पे क्यों बैठे हो?\nलड़का: Ma'am, ये मेरी girlfriend है!\nTeacher: तो इसका क्या?\nलड़का: एक bench पे बैठेंगे तो एक किताब का खर्चा बचेगा!"
+  ],
+  sad: [
+    "😢 *Sad Joke:*\nDoctor: आप परेशान क्यों हैं?\nमरीज़: मेरी बीवी ने मुझे छोड़ दिया!\nDoctor: कब?\nमरीज़: 5 साल पहले!\nDoctor: अभी भी याद आता है?\nमरीज़: नहीं, पर आज उसकी शादी है!",
+    "😭 *Sad Joke:*\nसंता: बंता, क्यों रो रहा है?\nबंता: मेरी बीवी मुझे छोड़कर चली गई!\nसंता: तो रोने की क्या बात है?\nबंता: वो मेरा fridge भी साथ ले गई!",
+    "😥 *Sad Joke:*\nलड़का: मुझे कोई नहीं चाहता!\nदोस्त: मैं हूँ ना!\nलड़का: तुम तो दोस्त हो!\nदोस्त: तो?\nलड़का: दोस्त तो सब चाहते हैं, girlfriend नहीं चाहती!",
+    "😔 *Sad Joke:*\nपत्नी: तुमने मेरा birthday क्यों नहीं मनाया?\nपतिदेव: मनाया तो था!\nपत्नी: कब?\nपतिदेव: सपने में!",
+    "😞 *Sad Joke:*\nBoss: तुम इतने late क्यों आए?\nEmployee: Sir, मेरा alarm नहीं बजा!\nBoss: तो नया alarm ले लो!\nEmployee: लेकिन उसके लिए पैसे नहीं!\nBoss: तो उठने का time ही बदल लो!"
+  ],
+  fun: [
+    "😂 *Fun Joke:*\nTeacher: तुम school क्यों नहीं आए कल?\nStudent: मम्मी बीमार थीं!\nTeacher: तो तुम क्यों नहीं आए?\nStudent: मम्मी ने कहा था school मत जाओ!\nTeacher: क्यों?\nStudent: उन्हें अकेले रहना पसंद नहीं!",
+    "🤣 *Fun Joke:*\nसंता: बंता, तुम तो बहुत खुश दिख रहे हो!\nबंता: हाँ, कल मेरी शादी है!\nसंता: मुबारक हो! दुल्हन कौन सी है?\nबंता: पता नहीं, पापा ने fix की है!",
+    "😆 *Fun Joke:*\nDoctor: आपको क्या problem है?\nमरीज़: सर दर्द!\nDoctor: कब से?\nमरीज़: जब से आपका clinic खुला है!\nDoctor: तो अब तक क्यों नहीं आए?\nमरीज़: दर्द ही नहीं था!",
+    "😅 *Fun Joke:*\nपापा: बेटा, exam में कितने number आए?\nबेटा: 100!\nपापा: वाह!\nबेटा: 100 में से 100!\nपापा: तो?\nबेटा: 100 number कम!",
+    "😁 *Fun Joke:*\nInterviewer: आपकी qualifications?\nCandidate: मैं बहुत honest हूँ!\nInterviewer: और?\nCandidate: इतनी honest कि नौकरी ही नहीं मिलती!"
+  ],
+  angry: [
+    "😡 *Angry Joke:*\nपत्नी: तुम मुझसे बात क्यों नहीं करते?\nपतिदेव: तुम ही तो करती नहीं!\nपत्नी: मैं क्यों करूँ?\nपतिदेव: मैं क्यों करूँ?\nपत्नी: पहले तुम करो!\nपतिदेव: पहले तुम करो!",
+    "🤬 *Angry Joke:*\nBoss: तुम्हें निकाल रहा हूँ!\nEmployee: क्यों?\nBoss: तुम काम नहीं करते!\nEmployee: काम करना मेरे nature में नहीं!\nBoss: तो क्या करते हो?\nEmployee: आपको गुस्सा दिलाता हूँ!",
+    "😠 *Angry Joke:*\nTeacher: तुम homework क्यों नहीं लाए?\nStudent: कुत्ता खा गया!\nTeacher: तेरे पास कुत्ता है?\nStudent: नहीं, पर कल रात नींद में कुत्ता आया था!"
+  ],
+  india: [
+    "🇮🇳 *India Joke:*\nसंता: बंता, India का national animal क्या है?\nबंता: Tiger!\nसंता: National bird?\nबंता: Peacock!\nसंता: National fruit?\nबंता: Mango!\nसंता: National food?\nबंता: माँ के हाथ का खाना!",
+    "🇮🇳 *India Joke:*\nTeacher: India की capital क्या है?\nStudent: Delhi!\nTeacher: Mumbai क्या है?\nStudent: Financial capital!\nTeacher: Bangalore क्या है?\nStudent: IT capital!\nTeacher: Patna क्या है?\nStudent: Litti Chokha capital!"
+  ],
+  general: [
+    "😂 *General Joke:*\nTeacher: तुम्हें 1 से 10 तक गिनती आती है?\nStudent: हाँ!\nTeacher: तो बताओ.\nStudent: 1,2,3,4,5,6,7,8,9,10, JACK, QUEEN, KING!",
+    "😅 *General Joke:*\nसंता: बंता, तेरी बीवी ने तुझे कभी परेशान किया?\nबंता: कभी नहीं.\nसंता: इतना confident?\nबंता: हाँ, मैंने अभी तक शादी नहीं की!",
+    "😆 *General Joke:*\nDoctor: आपको किस चीज़ की allergy है?\nPatient: काम से!",
+    "🤣 *General Joke:*\nपत्नी: मेरा weight 60kg है, कितना होना चाहिए?\nपतिदेव: 20-25 kg काफी है!\nपत्नी: पागल हो गया?\nपतिदेव: नहीं, laptop का weight 2-3 kg होता है!"
+  ]
+};
 
- if (typeof threadData.data["🥰"] === "undefined")
-  threadData.data["🥰"] = false;
+/* ==================== SHAYARI DATABASE ==================== */
+const shayariDB = {
+  love: [
+    "❤️ *Love Shayari:*\nतेरे बिना ये दिल लगता नहीं,\nतेरे बिना ये पल भी ढलता नहीं,\nतू दूर है तो क्या हुआ,\nतेरी यादें ही काफी हैं!",
+    "💕 *Love Shayari:*\nमिलते हैं तो यूं लगता है,\nजैसे सदियों से जानते हैं,\nबिछड़ते हैं तो यूं लगता है,\nजैसे अब भी साथ रहते हैं!",
+    "💖 *Love Shayari:*\nचेहरे पे मुस्कान हो तुम,\nदिल की धड़कन हो तुम,\nदूर रहकर भी पास हो तुम,\nमेरी जान हो तुम!",
+    "💗 *Love Shayari:*\nतुमसे मिलकर लगा,\nकुछ कमी थी जीवन में,\nवो कमी तुमने पूरी कर दी,\nशायद इसी को कहते हैं मोहब्बत!"
+  ],
+  sad: [
+    "😢 *Sad Shayari:*\nहम उनकी मोहब्बत में,\nखो से गए,\nउनकी एक मुस्कान के लिए,\nहम रो से गए!",
+    "😭 *Sad Shayari:*\nवो मेरा नहीं तो क्या हुआ,\nमेरी चाहत तो है,\nवो किसी और का हो गया,\nमेरी मोहब्बत तो है!",
+    "😥 *Sad Shayari:*\nरात के अंधेरे में,\nयाद तेरी आती है,\nतन्हाई में जलते हैं,\nआँखों से बरसात होती है!"
+  ],
+  fun: [
+    "😂 *Fun Shayari:*\nज़िंदगी में मस्ती हो,\nदिल में खुशियों की बस्ती हो,\nहंसते रहो यूं ही हर पल,\nहर दिन ऐसी ही फ़िज़ा हो!",
+    "🤣 *Fun Shayari:*\nदोस्तों के संग गुजरे पल,\nहर पल है खास,\nसाथ हो दोस्तों का तो,\nहर मुश्किल है आसान!",
+    "😆 *Fun Shayari:*\nचाय की प्याली हो,\nबिस्कुट की टुकड़ी हो,\nदोस्त का साथ हो,\nतो क्या कमी हो!"
+  ],
+  angry: [
+    "😡 *Angry Shayari:*\nगुस्सा भी तेरा प्यारा लगे,\nहर अदा तेरी न्यारी लगे,\nतू रूठे तो भी अच्छा लगे,\nतू माने तो दिल हारा लगे!",
+    "🤬 *Angry Shayari:*\nतेरे गुस्से का भी,\nअलग ही अंदाज़ है,\nतू जब रूठती है,\nतो भी खास है!",
+    "😠 *Angry Shayari:*\nगुस्सा तू कर ले,\nमैं तुझसे प्यार करूंगा,\nतू रूठ के देख,\nमैं मना लूंगा!"
+  ]
+};
 
- const action = body.trim().split(/\s+/)[1]?.toLowerCase();
+/* ==================== MALE/FEMALE VARIANT ==================== */
+// Gender के हिसाब से prefix जोड़ें
+function addGenderPrefix(text, gender, firstName) {
+  if (!firstName || firstName === "Unknown") firstName = "";
+  const tag = firstName ? ` ${firstName}` : "";
 
- if (action === "on")
-  threadData.data["🥰"] = true;
- else if (action === "off")
-  threadData.data["🥰"] = false;
- else
-  threadData.data["🥰"] = !threadData.data["🥰"];
+  if (gender === "female") {
+    return `👩 *${firstName || "जानू"}*,\n\n${text}`;
+  } else if (gender === "male") {
+    return `👨 *${firstName || "भाई"}*,\n\n${text}`;
+  }
+  return text;
+}
 
- await Threads.setData(threadID, { data: threadData.data });
- global.data.threadData.set(threadID, threadData.data);
+/* ==================== EMOJI MAP ==================== */
+const emojiMap = {
+  '😂': 'fun', '🤣': 'fun', '😆': 'fun', '😁': 'fun', '😅': 'fun', '😹': 'fun',
+  '❤️': 'love', '💕': 'love', '💗': 'love', '💓': 'love', '💖': 'love', '💘': 'love',
+  '💞': 'love', '💝': 'love', '💟': 'love', '🥰': 'love', '😍': 'love', '😘': 'love',
+  '😢': 'sad', '😭': 'sad', '🥺': 'sad', '😔': 'sad', '😞': 'sad', '😟': 'sad',
+  '😡': 'angry', '🤬': 'angry', '👿': 'angry', '💢': 'angry', '😠': 'angry',
+  '🔥': 'fire', '💯': 'fire', '⚡': 'fire', '💪': 'fire',
+  '👍': 'like', '👎': 'like', '👌': 'like',
+  '😎': 'cool', '🕶️': 'cool',
+  '🤪': 'crazy', '😜': 'crazy', '😝': 'crazy',
+  '😪': 'sleep', '😴': 'sleep',
+  '🙏': 'pray', '🤲': 'pray',
+  '👋': 'hi', '✋': 'hi',
+  '🎂': 'birthday', '🥳': 'party', '🎉': 'party',
+  '🍕': 'food', '🍔': 'food', '🌭': 'food',
+  '🥤': 'drink', '🍺': 'drink', '☕': 'tea',
+  '🎮': 'game', '🕹️': 'game',
+  '🐶': 'animal', '🐱': 'animal', '🐼': 'animal',
+  '🌹': 'rose', '🌸': 'flower', '🌈': 'rainbow',
+  '👻': 'ghost', '💀': 'skull',
+  '🎁': 'gift', '🎀': 'gift',
+  '⚽': 'sports', '🏀': 'sports',
+  '💃': 'dance', '🕺': 'dance',
+  '📚': 'study', '📖': 'study',
+  '🚀': 'rocket', '✈️': 'plane',
+  '👀': 'look', '👁️': 'eye',
+  '🤔': 'think', '🧐': 'think'
+};
 
- api.sendMessage(
-  `Auto-react is now ${threadData.data["🥰"] ? "ON 🟢" : "OFF 🔴"}`,
-  threadID,
-  messageID
- );
+/* ==================== RUN (Status Command) ==================== */
+module.exports.run = function ({ api, event, args }) {
+  const { threadID } = event;
+
+  if (!global.mastiStats) {
+    global.mastiStats = {
+      totalReactions: 0, total: 0,
+      majak: 0, masti: 0, flirt: 0, shayri: 0,
+      maleReplies: 0, femaleReplies: 0, unknownReplies: 0,
+      love: 0, sad: 0, angry: 0, cool: 0, india: 0, greet: 0
+    };
+  }
+
+  const statusMsg =
+    `🎉 *ULTIMATE MASTI BOT v9.0* 🎉\n\n` +
+    `✅ *Status:* हमेशा ON\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `📊 *TOTAL STATS:*\n` +
+    `• Total Reactions: ${global.mastiStats.totalReactions}\n` +
+    `• Total Replies: ${global.mastiStats.total}\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `🎭 *REPLY TYPES:*\n` +
+    `😂 Majak: ${global.mastiStats.majak}\n` +
+    `🥳 Masti: ${global.mastiStats.masti}\n` +
+    `😘 Flirt: ${global.mastiStats.flirt}\n` +
+    `💫 Shayri: ${global.mastiStats.shayri}\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `👥 *GENDER STATS:*\n` +
+    `👨 Male: ${global.mastiStats.maleReplies}\n` +
+    `👩 Female: ${global.mastiStats.femaleReplies}\n` +
+    `🤖 Unknown: ${global.mastiStats.unknownReplies}\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `📝 *CATEGORY STATS:*\n` +
+    `❤️ Love: ${global.mastiStats.love}\n` +
+    `😢 Sad: ${global.mastiStats.sad}\n` +
+    `😡 Angry: ${global.mastiStats.angry}\n` +
+    `🇮🇳 India: ${global.mastiStats.india}\n` +
+    `🌅 Greet: ${global.mastiStats.greet}\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `👑 *Credit:* SHAHADAT SAHU`;
+
+  return api.sendMessage(statusMsg, threadID);
+};
+
+/* ==================== HANDLE EVENT ==================== */
+module.exports.handleEvent = async function ({ api, event, Users }) {
+  if (event.type !== "message") return;
+  if (event.senderID === api.getCurrentUserID()) return;
+
+  const msg = event.body || "";
+  const threadID = event.threadID;
+  const senderID = event.senderID;
+  const msgLower = msg.toLowerCase();
+
+  // Anti-loop check
+  if (!loopGuard.check(api, event)) return;
+
+  try {
+    if (!global.mastiStats) {
+      global.mastiStats = {
+        totalReactions: 0, total: 0,
+        majak: 0, masti: 0, flirt: 0, shayri: 0,
+        maleReplies: 0, femaleReplies: 0, unknownReplies: 0,
+        love: 0, sad: 0, angry: 0, cool: 0, india: 0, greet: 0
+      };
+    }
+
+    /* ----- Gender पहचानो ----- */
+    const gender = await getUserGender(api, senderID);
+
+    let userName = "Unknown";
+    let firstName = "";
+    try {
+      userName = await Users.getNameUser(senderID);
+      firstName = (userName || "").split(" ")[0] || "";
+    } catch {}
+
+    if (gender === "female") global.mastiStats.femaleReplies++;
+    else if (gender === "male") global.mastiStats.maleReplies++;
+    else global.mastiStats.unknownReplies++;
+
+    /* ----- Category detect ----- */
+    let detectedCategory = null;
+    let reactionEmoji = null;
+
+    const loveWords = ["love", "ilove", "labyu", "baby", "babe", "crush", "romantic", "प्यार", "मोहब्बत"];
+    for (const word of loveWords) {
+      if (msgLower.includes(word)) {
+        detectedCategory = "love";
+        reactionEmoji = "❤️";
+        global.mastiStats.love++;
+        break;
+      }
+    }
+
+    if (!detectedCategory) {
+      const sadWords = ["sad", "sakit", "pain", "depress", "stress", "cry", "उदास", "दुख"];
+      for (const word of sadWords) {
+        if (msgLower.includes(word)) {
+          detectedCategory = "sad";
+          reactionEmoji = "😢";
+          global.mastiStats.sad++;
+          break;
+        }
+      }
+    }
+
+    if (!detectedCategory) {
+      const angryWords = ["fuck", "sex", "porn", "horn", "गुस्सा", "गाली"];
+      for (const word of angryWords) {
+        if (msgLower.includes(word)) {
+          detectedCategory = "angry";
+          reactionEmoji = "😡";
+          global.mastiStats.angry++;
+          break;
+        }
+      }
+    }
+
+    if (!detectedCategory) {
+      const indiaWords = ["india", "bharat", "hindustan", "भारत"];
+      for (const word of indiaWords) {
+        if (msgLower.includes(word) || msg.includes("🇮🇳")) {
+          detectedCategory = "india";
+          reactionEmoji = "🇮🇳";
+          global.mastiStats.india++;
+          break;
+        }
+      }
+    }
+
+    if (!detectedCategory) {
+      const greetWords = ["morning", "afternoon", "evening", "night", "good", "सुप्रभात"];
+      for (const word of greetWords) {
+        if (msgLower.includes(word)) {
+          detectedCategory = "greet";
+          reactionEmoji = "🌅";
+          global.mastiStats.greet++;
+          break;
+        }
+      }
+    }
+
+    if (!detectedCategory) {
+      const funWords = ["wow", "awesome", "robot", "fun", "joke", "मज़ाक"];
+      for (const word of funWords) {
+        if (msgLower.includes(word)) {
+          detectedCategory = "fun";
+          reactionEmoji = "😂";
+          global.mastiStats.masti++;
+          break;
+        }
+      }
+    }
+
+    // Emoji से detect
+    if (!detectedCategory) {
+      for (const emoji in emojiMap) {
+        if (msg.includes(emoji)) {
+          detectedCategory = emojiMap[emoji];
+          reactionEmoji = emoji;
+          break;
+        }
+      }
+    }
+
+    // Reaction भेजो
+    if (detectedCategory && reactionEmoji) {
+      try {
+        await api.setMessageReaction(reactionEmoji, event.messageID);
+        global.mastiStats.totalReactions++;
+      } catch {}
+    }
+
+    // 95% chance reply
+    if (detectedCategory && Math.random() < 0.95) {
+      let replyMessage = "";
+      let replyType = "masti";
+
+      const isJoke = Math.random() < 0.7;
+
+      if (isJoke) {
+        if (detectedCategory === "love" && jokesDB.love) {
+          replyMessage = jokesDB.love[Math.floor(Math.random() * jokesDB.love.length)];
+          replyType = "flirt";
+        } else if (detectedCategory === "sad" && jokesDB.sad) {
+          replyMessage = jokesDB.sad[Math.floor(Math.random() * jokesDB.sad.length)];
+          replyType = "sad";
+        } else if (detectedCategory === "angry" && jokesDB.angry) {
+          replyMessage = jokesDB.angry[Math.floor(Math.random() * jokesDB.angry.length)];
+          replyType = "majak";
+        } else if (detectedCategory === "india" && jokesDB.india) {
+          replyMessage = jokesDB.india[Math.floor(Math.random() * jokesDB.india.length)];
+        } else if (detectedCategory === "fun" && jokesDB.fun) {
+          replyMessage = jokesDB.fun[Math.floor(Math.random() * jokesDB.fun.length)];
+        } else {
+          replyMessage = jokesDB.general[Math.floor(Math.random() * jokesDB.general.length)];
+        }
+      } else {
+        if (detectedCategory === "love" && shayariDB.love) {
+          replyMessage = shayariDB.love[Math.floor(Math.random() * shayariDB.love.length)];
+          replyType = "shayri";
+        } else if (detectedCategory === "sad" && shayariDB.sad) {
+          replyMessage = shayariDB.sad[Math.floor(Math.random() * shayariDB.sad.length)];
+        } else if (detectedCategory === "angry" && shayariDB.angry) {
+          replyMessage = shayariDB.angry[Math.floor(Math.random() * shayariDB.angry.length)];
+          replyType = "shayri";
+        } else if (detectedCategory === "fun" && shayariDB.fun) {
+          replyMessage = shayariDB.fun[Math.floor(Math.random() * shayariDB.fun.length)];
+        } else {
+          replyMessage = shayariDB.love[Math.floor(Math.random() * shayariDB.love.length)];
+          replyType = "shayri";
+        }
+      }
+
+      // Gender-based prefix
+      replyMessage = addGenderPrefix(replyMessage, gender, firstName);
+
+      if (replyType === "majak") global.mastiStats.majak++;
+      else if (replyType === "masti") global.mastiStats.masti++;
+      else if (replyType === "flirt") global.mastiStats.flirt++;
+      else if (replyType === "shayri") global.mastiStats.shayri++;
+
+      global.mastiStats.total++;
+
+      await api.sendMessage(replyMessage, threadID);
+    }
+
+  } catch (error) {
+    console.log("[MASTI v9] Error:", error.message);
+  }
 };
