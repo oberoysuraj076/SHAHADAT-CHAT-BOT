@@ -6,7 +6,7 @@ module.exports.config = {
   name: "crush",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "SHAHADAT SAHU",
+  credits: "RISHIKESH",
   description: "Generate a couple banner image using sender and target Facebook UID via Avatar Canvas API",
   commandCategory: "banner",
   usePrefix: true,
@@ -20,16 +20,25 @@ module.exports.config = {
 };
 
 const crushCaptions = [
-  "প্রেমে যদি অপূর্ণতাই সুন্দর হয়, তবে পূর্ণতার সৌন্দর্য কোথায়?❤️",
-  "যদি বৃষ্টি হতাম… তোমার দৃষ্টি ছুঁয়ে দিতাম! চোখে জমা বিষাদটুকু এক নিমেষে ধুয়ে দিতাম🤗",
-  "তোমার ভালোবাসার প্রতিচ্ছবি দেখেছি বারে বার💖",
-  "তোমার সাথে একটি দিন হতে পারে ভালো, কিন্তু তোমার সাথে সবগুলি দিন হতে পারে ভালোবাসা🌸",
-  "এক বছর নয়, কয়েক জন্ম শুধু তোমার প্রেমে পরতে পরতে ই চলে যাবে😍",
-  "কেমন করে এই মনটা দেব তোমাকে… বেসেছি যাকে ভালো আমি, মন দিয়েছি তাকে🫶",
-  "পিছু পিছু ঘুরলে কি আর প্রেম হয়ে যায়… কাছে এসে বাসলে ভালো, মন পাওয়া যায়❤️‍🩹",
-  "তুমি থাকলে নিজেকে এমন সুখী মনে হয়, যেনো আমার জীবনে কোনো দুঃখই নেই😊",
-  "তোমার হাতটা ধরতে পারলে মনে হয় পুরো পৃথিবীটা ধরে আছি🥰",
-  "তোমার প্রতি ভালো লাগা যেনো প্রতিনিয়ত বেড়েই চলছে😘"
+  "प्यार में अगर अधूरापन ही सुंदर है,\nतो पूर्णता की सुंदरता कहाँ है? ❤️",
+
+  "काश मैं बारिश होता…\nतुम्हारी नज़रों को छू जाता!\nआँखों में जमा उदासी को\nएक पल में धो देता 🤗",
+
+  "तुम्हारे प्यार की परछाईं देखी है बार-बार 💖",
+
+  "तुम्हारे साथ एक दिन अच्छा हो सकता है,\nपर तुम्हारे साथ हर दिन प्यार हो सकता है 🌸",
+
+  "एक साल नहीं, कई जन्म सिर्फ तुम्हारे प्यार में\nपड़ते-पड़ते ही निकल जाएँगे 😍",
+
+  "कैसे ये दिल दे दूँ तुम्हें…\nजिसे चाहा दिल से,\nदिल भी दे दिया उसी को 🫶",
+
+  "पीछे-पीछे घूमने से क्या प्यार हो जाता है…\nपास आकर बैठो, दिल पाया जाता है ❤️‍🩹",
+
+  "तुम हो तो खुद को इतना खुशनसीब लगता है,\nजैसे ज़िंदगी में कोई ग़म ही नहीं 😊",
+
+  "तुम्हारा हाथ थाम लूँ तो लगता है\nपूरी दुनिया थाम ली 🥰",
+
+  "तुम्हारे लिए ये अच्छा लगना\nहर दिन बढ़ता ही जा रहा है 😘"
 ];
 
 module.exports.run = async function ({ event, api }) {
@@ -45,7 +54,7 @@ module.exports.run = async function ({ event, api }) {
 
   if (!targetID) {
     return api.sendMessage(
-      "Please reply or mention someone......",
+      "किसी को reply करें या mention करें......",
       threadID,
       messageID
     );
@@ -68,9 +77,14 @@ module.exports.run = async function ({ event, api }) {
       { responseType: "arraybuffer", timeout: 30000 }
     );
 
+    // ---------- Cache Folder Auto-Create ----------
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
     const imgPath = path.join(
-      __dirname,
-      "cache",
+      cacheDir,
       `crush_${senderID}_${targetID}.png`
     );
 
@@ -85,13 +99,17 @@ module.exports.run = async function ({ event, api }) {
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        try {
+          fs.unlinkSync(imgPath);
+        } catch (_) {}
+      },
       messageID
     );
 
   } catch (e) {
     return api.sendMessage(
-      "API Error Call Boss SAHU",
+      "❌ API Error, Boss RISHIKESH को call करें",
       threadID,
       messageID
     );
