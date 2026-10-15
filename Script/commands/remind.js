@@ -6,7 +6,7 @@ module.exports.config = {
   credits: "SHAHADAT SAHU",
   description: "Set a temporary reminder",
   commandCategory: "Utility",
-  usages: "remind 10m পানি খাও | remind list | remind cancel 1",
+  usages: "remind 10m paani piyo | remind list | remind cancel 1",
   cooldowns: 3,
   usePrefix: true
 };
@@ -64,7 +64,7 @@ function formatTime(ms) {
 function sendReminder(api, reminder) {
   reminders.delete(reminder.id);
 
-  const tag = "আপনার";
+  const tag = "आपका";
   const body = `⏰ ${tag} Reminder!\n\n📝 ${reminder.text}\n🆔 Reminder ID: ${reminder.id}`;
 
   return api.sendMessage(
@@ -88,7 +88,11 @@ function listReminders(api, event) {
     .sort((a, b) => a.dueAt - b.dueAt);
 
   if (!userReminders.length) {
-    return api.sendMessage("📭 এই chat-এ আপনার কোনো active reminder নেই।", event.threadID, event.messageID);
+    return api.sendMessage(
+      "📭 इस chat में आपका कोई active reminder नहीं है।",
+      event.threadID,
+      event.messageID
+    );
   }
 
   const lines = userReminders.map(item => {
@@ -107,13 +111,21 @@ function cancelReminder(api, event, id) {
   const reminder = reminders.get(id);
 
   if (!reminder || reminder.senderID !== String(event.senderID) || reminder.threadID !== String(event.threadID)) {
-    return api.sendMessage("❌ এই ID দিয়ে আপনার কোনো reminder পাওয়া যায়নি।", event.threadID, event.messageID);
+    return api.sendMessage(
+      "❌ इस ID से आपका कोई reminder नहीं मिला।",
+      event.threadID,
+      event.messageID
+    );
   }
 
   clearTimeout(reminder.timer);
   reminders.delete(id);
 
-  return api.sendMessage(`✅ Reminder #${id} cancel করা হয়েছে।`, event.threadID, event.messageID);
+  return api.sendMessage(
+    `✅ Reminder #${id} cancel कर दिया गया।`,
+    event.threadID,
+    event.messageID
+  );
 }
 
 module.exports.run = async function ({ api, event, args }) {
@@ -126,7 +138,11 @@ module.exports.run = async function ({ api, event, args }) {
   if (["cancel", "remove", "delete"].includes(action)) {
     const id = Number.parseInt(args[1], 10);
     if (!id) {
-      return api.sendMessage("⚠️ Usage: /remind cancel 1", event.threadID, event.messageID);
+      return api.sendMessage(
+        "⚠️ Usage: /remind cancel 1",
+        event.threadID,
+        event.messageID
+      );
     }
     return cancelReminder(api, event, id);
   }
@@ -136,7 +152,7 @@ module.exports.run = async function ({ api, event, args }) {
 
   if (!duration || !text) {
     return api.sendMessage(
-      "⏰ 𝗥𝗲𝗺𝗶𝗻𝗱𝗲𝗿\n\n✅ Usage:\n/remind 10m পানি খাও\n/remind 2h পড়তে বসো\n/remind list\n/remind cancel 1\n\n⏱️ Time: s, m, h, d | Max: 7d",
+      "⏰ 𝗥𝗲𝗺𝗶𝗻𝗱𝗲𝗿\n\n✅ Usage:\n/remind 10m paani piyo\n/remind 2h padhne baitho\n/remind list\n/remind cancel 1\n\n⏱️ Time: s, m, h, d | Max: 7d",
       event.threadID,
       event.messageID
     );
@@ -156,7 +172,7 @@ module.exports.run = async function ({ api, event, args }) {
   reminders.set(id, reminder);
 
   return api.sendMessage(
-    `✅ Reminder set করা হয়েছে!\n\n🆔 ID: ${id}\n⏳ Time: ${formatTime(duration.ms)}\n📝 ${text}\n\n⚠️ Note: Bot restart হলে এই temporary reminder মুছে যাবে।`,
+    `✅ Reminder set कर दिया गया!\n\n🆔 ID: ${id}\n⏳ Time: ${formatTime(duration.ms)}\n📝 ${text}\n\n⚠️ Note: Bot restart होने पर ये temporary reminder मिट जाएगा।`,
     event.threadID,
     event.messageID
   );
