@@ -1,9 +1,9 @@
 module.exports.config = {
   name: "bf",
-  version: "2.0.0",
+  version: "2.0.3",
   hasPermssion: 0,
   credits: "SHAHADAT SAHU",
-  description: "couple banner",
+  description: "Couple banner",
   commandCategory: "banner",
   usages: "[@mention | reply]",
   cooldowns: 5,
@@ -27,6 +27,7 @@ module.exports.run = async function ({ event, api }) {
 
   if (!targetID)
     return api.sendMessage(
+      "किसी को reply करें या mention करें......\n" +
       "Please reply or mention someone......",
       threadID,
       messageID
@@ -56,19 +57,57 @@ module.exports.run = async function ({ event, api }) {
 
     fs.writeFileSync(imgPath, res.data);
 
+    // ---------- Captions (Hindi + English) ----------
+    const CAPTIONS = [
+      "~ देख, अपने बॉयफ्रेंड को दूसरी लड़कियों की तरफ देखना मत\n" +
+      "~ Hey, don't let your boyfriend look at other girls",
+
+      "~ तेरे बॉयफ्रेंड का ध्यान रखना, वरना कोई और ले जाएगी\n" +
+      "~ Take care of your boyfriend, or someone else will take him",
+
+      "~ ये तेरा बॉयफ्रेंड है, इसे संभाल कर रखना\n" +
+      "~ This is your boyfriend, keep him safe",
+
+      "~ प्यार में पागल हो जाओ,\n" +
+      "~ पर अपने बॉयफ्रेंड को पागल मत बनने दो\n" +
+      "━━━━━━━━━━━━━━━━━\n" +
+      "~ Go crazy in love,\n" +
+      "~ But don't let your boyfriend go crazy",
+
+      "~ तेरा बॉयफ्रेंड सिर्फ तेरा है,\n" +
+      "~ किसी और को देखा तो मुँह तोड़ दूँगा\n" +
+      "━━━━━━━━━━━━━━━━━\n" +
+      "~ Your boyfriend is only yours,\n" +
+      "~ If he looks at someone else, I'll break his face",
+
+      "~ प्रेम में पड़ना अच्छी बात है,\n" +
+      "~ पर अपने बॉयफ्रेंड को काबू में रखना\n" +
+      "━━━━━━━━━━━━━━━━━\n" +
+      "~ Falling in love is good,\n" +
+      "~ But keep your boyfriend under control"
+    ];
+
+    const caption =
+      CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)];
+
     return api.sendMessage(
       {
-        body: "~এই নে তোর বয়ফ্রেন্ড অন্য মেয়ের দিকে নজর দিস না 😍😸",
+        body: caption,
         attachment: fs.createReadStream(imgPath)
       },
       threadID,
-      () => fs.unlinkSync(imgPath),
+      () => {
+        try {
+          fs.unlinkSync(imgPath);
+        } catch (_) {}
+      },
       messageID
     );
 
   } catch (e) {
     return api.sendMessage(
-      "GF API Error | SAHU-API unreachable",
+      "GF API Error | SAHU-API unreachable\n" +
+      "API Error, Boss SAHU को call करें",
       threadID,
       messageID
     );
