@@ -42,8 +42,8 @@ module.exports.run = async ({ api, event, args }) => {
     if (currentStatus === requestedStatus) {
       return api.sendMessage(
         requestedStatus
-          ? "𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n✓ 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗔𝗰𝘁𝗶𝘃𝗲\n𝗔𝗱𝗺𝗶𝗻 𝗺𝗼𝗱𝗲 𝗮𝗴𝗲𝗶 𝗢𝗡 𝗮𝗰𝗵𝗲."
-          : "𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n× 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗗𝗶𝘀𝗮𝗯𝗹𝗲𝗱\n𝗔𝗱𝗺𝗶𝗻 𝗺𝗼𝗱𝗲 𝗮𝗴𝗲𝗶 𝗢𝗙𝗙 𝗮𝗰𝗵𝗲.",
+          ? "𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n✓ 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗔𝗰𝘁𝗶𝘃𝗲\n𝗔𝗱𝗺𝗶𝗻 𝗺𝗼𝗱𝗲 𝗶𝘀 𝗮𝗹𝗿𝗲𝗮𝗱𝘆 𝗢𝗡."
+          : "𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n× 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗗𝗶𝘀𝗮𝗯𝗹𝗲𝗱\n𝗔𝗱𝗺𝗶𝗻 𝗺𝗼𝗱𝗲 𝗶𝘀 𝗮𝗹𝗿𝗲𝗮𝗱𝘆 𝗢𝗙𝗙.",
         event.threadID,
         event.messageID
       );
@@ -60,8 +60,8 @@ module.exports.run = async ({ api, event, args }) => {
 
     return api.sendMessage(
       requestedStatus
-        ? "🔰𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n● 𝗦𝘁𝗮𝘁𝘂𝘀: 𝗔𝗖𝗧𝗜𝗩𝗘\n✓ 𝗔𝗰𝗰𝗲𝘀𝘀: 𝗦𝗵𝘂𝗱𝗵𝘂 𝗮𝗱𝗺𝗶𝗻 𝗱𝗲𝗿 𝗷𝗼𝗻𝗻𝗼✅"
-        : "🔰𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n● 𝗦𝘁𝗮𝘁𝘂𝘀: 𝗗𝗜𝗦𝗔𝗕𝗟𝗘𝗗\n✓ 𝗔𝗰𝗰𝗲𝘀𝘀: 𝗦𝗵𝗼𝗯𝗮𝗿 𝗷𝗼𝗻𝗻𝗼 𝗼𝗽𝗲𝗻✅",
+        ? "🔰𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n● 𝗦𝘁𝗮𝘁𝘂𝘀: 𝗔𝗖𝗧𝗜𝗩𝗘\n✓ 𝗔𝗰𝗰𝗲𝘀𝘀: 𝗢𝗻𝗹𝘆 𝗮𝗱𝗺𝗶𝗻𝘀 ✅"
+        : "🔰𝗔𝗱𝗺𝗶𝗻 𝗢𝗻𝗹𝘆 𝗠𝗼𝗱𝗲\n\n● 𝗦𝘁𝗮𝘁𝘂𝘀: 𝗗𝗜𝗦𝗔𝗕𝗟𝗘𝗗\n✓ 𝗔𝗰𝗰𝗲𝘀𝘀: 𝗘𝘃𝗲𝗿𝘆𝗼𝗻𝗲 𝗶𝘀 𝗮𝗹𝗹𝗼𝘄𝗲𝗱 ✅",
       event.threadID,
       event.messageID
     );
