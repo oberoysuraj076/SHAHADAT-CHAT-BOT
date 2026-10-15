@@ -1,7 +1,7 @@
 module.exports.config = {
     name: "rules",
     aliases: ["rule"],
-    version: "1.3.0",
+    version: "1.3.1",
     hasPermssion: 0,
     credits: "SHAHADAT SAHU",
     description: "Send group rules with group name and admin list",
@@ -15,13 +15,13 @@ module.exports.config = {
 const MALE_ADMIN_LIST = [
     "Sandeep Verma",
     "Nishant Sharma",
-    "Betal Lok",
     "Rishikesh"
 ];
 
 // 👸 Female Admin list
 const FEMALE_ADMIN_LIST = [
     "Aratika Thakur",
+    "Betal Lok",
     "Betalni Aarzoo"
 ];
 
