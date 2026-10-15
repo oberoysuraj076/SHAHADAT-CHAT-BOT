@@ -1,10 +1,10 @@
 module.exports.config = {
     name: "kick",
     aliases: ["boot"],
-    version: "2.0.0",
+    version: "1.0.0",
     hasPermssion: 0,
     credits: "SHAHADAT SAHU",
-    description: "Tag kora user-ke group theke remove kore",
+    description: "Tag किए गए user को group से remove करता है",
     commandCategory: "System",
     usages: "[tag]",
     cooldowns: 0
@@ -13,7 +13,7 @@ module.exports.config = {
 function getThreadInfo(api, threadID) {
     return new Promise((resolve, reject) => {
         if (typeof api.getThreadInfo !== "function") {
-            return reject(new Error("getThreadInfo supported na"));
+            return reject(new Error("getThreadInfo supported नहीं है"));
         }
 
         let doneOnce = false;
@@ -68,7 +68,7 @@ module.exports.run = async function ({ api, event }) {
 
         if (!mentionIDs.length) {
             return api.sendMessage(
-                "⚠️ Jake kick korte chan take tag korun.",
+                "⚠️ जिसे kick करना है उसे tag करें।",
                 threadID,
                 messageID
             );
@@ -78,7 +78,7 @@ module.exports.run = async function ({ api, event }) {
 
         if (!threadInfo || !Array.isArray(threadInfo.adminIDs)) {
             return api.sendMessage(
-                "❌ Group admin information check kora jacche na.",
+                "❌ Group admin information check नहीं हो पा रही।",
                 threadID,
                 messageID
             );
@@ -93,7 +93,7 @@ module.exports.run = async function ({ api, event }) {
 
         if (!botIsAdmin) {
             return api.sendMessage(
-                "⚠️ Bot-ke age group admin korte hobe.",
+                "⚠️ पहले Bot को group admin बनाना होगा।",
                 threadID,
                 messageID
             );
@@ -106,7 +106,7 @@ module.exports.run = async function ({ api, event }) {
 
         if (!senderIsAdmin) {
             return api.sendMessage(
-                "⚠️ Shudhu group admin-ra ei command use korte parbe.",
+                "⚠️ सिर्फ group admin ही ये command use कर सकते हैं।",
                 threadID,
                 messageID
             );
@@ -127,7 +127,7 @@ module.exports.run = async function ({ api, event }) {
             } catch (error) {
                 failed++;
                 console.error(
-                    `[KICK] ${userID} remove korte pareni:`,
+                    `[KICK] ${userID} को remove नहीं कर पाए:`,
                     error?.message || error
                 );
             }
@@ -135,7 +135,7 @@ module.exports.run = async function ({ api, event }) {
 
         if (success > 0 && failed === 0) {
             return api.sendMessage(
-                `✅ ${success} jon-ke group theke remove kora hoyeche.`,
+                `✅ ${success} लोगों को group से remove कर दिया गया।`,
                 threadID,
                 messageID
             );
@@ -143,14 +143,14 @@ module.exports.run = async function ({ api, event }) {
 
         if (success > 0) {
             return api.sendMessage(
-                `✅ Remove hoyeche: ${success} jon\n❌ Failed: ${failed} jon`,
+                `✅ Remove हुए: ${success} लोग\n❌ Failed: ${failed} लोग`,
                 threadID,
                 messageID
             );
         }
 
         return api.sendMessage(
-            "⚠️ User-ke group theke remove kora jayni.",
+            "⚠️ User को group से remove नहीं किया जा सका।",
             threadID,
             messageID
         );
@@ -159,7 +159,7 @@ module.exports.run = async function ({ api, event }) {
         console.error("[KICK ERROR]", error);
 
         return api.sendMessage(
-            "⚠️ Kick korte giye ekta error hoyeche.",
+            "⚠️ Kick करते समय एक error हो गई।",
             threadID,
             messageID
         );
