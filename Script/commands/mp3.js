@@ -93,7 +93,7 @@ module.exports.run = async function ({
             !reply.attachments.length
         ) {
             return api.sendMessage(
-                "⚠️ একটি ভিডিওতে reply করে /mp3 লিখুন।",
+                "⚠️ किसी वीडियो पर reply करके /mp3 लिखें।",
                 event.threadID,
                 event.messageID
             );
@@ -107,7 +107,7 @@ module.exports.run = async function ({
 
         if (!video) {
             return api.sendMessage(
-                "⚠️ Reply করা message-এ কোনো video পাওয়া যায়নি!",
+                "⚠️ Reply किए गए message में कोई video नहीं मिला!",
                 event.threadID,
                 event.messageID
             );
@@ -166,7 +166,7 @@ module.exports.run = async function ({
             {
                 body:
                     "🎵 𝗩𝗶𝗱𝗲𝗼 𝗖𝗼𝗻𝘃𝗲𝗿𝘁𝗲𝗱 𝗧𝗼 𝗠𝗣𝟯\n\n" +
-                    "🎧 Your audio is ready!",
+                    "🎧 आपका ऑडियो तैयार है!",
                 attachment:
                     fs.createReadStream(audioPath)
             },
@@ -200,7 +200,7 @@ module.exports.run = async function ({
         );
 
         return api.sendMessage(
-            "❌ ভিডিও থেকে MP3 তৈরি করা যায়নি।",
+            "❌ वीडियो से MP3 नहीं बनाया जा सका।",
             event.threadID,
             event.messageID
         );
