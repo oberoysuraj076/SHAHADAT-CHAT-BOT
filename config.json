@@ -13,8 +13,8 @@
   "EMAIL": "Facebook number/ID",
   "PASSWORD": "Facebook password",
   "OTPKEY": "Facebook 2FA Secret Key",
-  "BOTNAME": "𝐒𝐇𝐀𝐇𝐀𝐃𝐀𝐓 𝐂𝐇𝐀𝐓 𝐁𝐎𝐓",
-  "PREFIX": "/",
+  "BOTNAME": "⸻̅͟ˣ͠𓆩𝐘꯭꘍꯭֟፝͡᪂꘍꯭ 𝐀꯭𖾝꯭꯭𝐌꯭꯭𝐔꯭𓆪꯭ˣ͢ ◄⸻̅͟ˣ͠𓆩𝐁꯭꯭𝐎꯭꯭𝐓꯭𓆪꯭ˣ͢",
+  "PREFIX": ".",
   "usePrefix": false,
   "reactUnsend": [
     "😡",
